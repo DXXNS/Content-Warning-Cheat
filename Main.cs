@@ -57,7 +57,7 @@ namespace TestMod
             //set window style
             GUIStyle customStyle = new GUIStyle(GUI.skin.window);
 
-            // Set background color to a dark color (you can adjust these values)
+            //  Set background color to a dark color (you can adjust these values)
             customStyle.normal.background = MakeTex(1, 1, new Color(0.1f, 0.1f, 0.1f, 1.0f)); // Adjust alpha as needed
             customStyle.focused.background = MakeTex(1, 1, new Color(0.1f, 0.1f, 0.1f, 1.0f)); // Adjust alpha as needed
             customStyle.onNormal.background = MakeTex(1, 1, new Color(0.1f, 0.1f, 0.1f, 1.0f)); // Adjust alpha as needed
