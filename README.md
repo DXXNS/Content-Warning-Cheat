@@ -27,3 +27,8 @@
 ### Lil info
 
 The "sex" checkbox is a test checkbox so i can test new features like the esp..
+
+
+### For more Help and Cheats
+
+Check out my discord if you want some more Indie Cheats haha [Discord Invite](https://discord.gg/9SbuC8puFN)
