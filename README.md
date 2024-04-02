@@ -16,7 +16,7 @@
 
 ### Installation
 
-1. Download MelonLoader [https://github.com/LavaGang/MelonLoader](https://github.com/LavaGang/MelonLoader) [direct download link](https://github.com/LavaGang/MelonLoader/releases/download/v0.6.2/MelonLoader.Installer.exe)
+1. Download MelonLoader [https://github.com/LavaGang/MelonLoader](https://github.com/LavaGang/MelonLoader)      [direct download link](https://github.com/LavaGang/MelonLoader/releases/download/v0.6.2/MelonLoader.Installer.exe)
 
 2. Run the Installer
 
