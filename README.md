@@ -21,10 +21,14 @@
 2. Run the Installer
 
 3. Locate your Game(the .exe file)
-  ![image](https://github.com/DXXNS/Content-Warning-Cheat/assets/108888172/4d6e5ae9-5645-479f-a00e-609dc505d691)
+ 
+![image](https://github.com/DXXNS/Content-Warning-Cheat/assets/108888172/4d6e5ae9-5645-479f-a00e-609dc505d691)
+
 
 4. Uncheck the Checkbox "Latest" and pick the version v0.4.0
-  ![image](https://github.com/DXXNS/Content-Warning-Cheat/assets/108888172/808914d5-747f-4ab6-95d9-1ec260e00092)
+
+![image](https://github.com/DXXNS/Content-Warning-Cheat/assets/108888172/808914d5-747f-4ab6-95d9-1ec260e00092)
+
 
 5. Press install
 
