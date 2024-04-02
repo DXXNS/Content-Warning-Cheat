@@ -7,12 +7,12 @@ namespace TestMod
 {
     public static class BuildInfo
     {
-        public const string Name = "TestMod"; // Name of the Mod.  (MUST BE SET)
-        public const string Description = "Mod for Testing"; // Description for the Mod.  (Set as null if none)
-        public const string Author = "TestAuthor"; // Author of the Mod.  (MUST BE SET)
-        public const string Company = null; // Company that made the Mod.  (Set as null if none)
-        public const string Version = "1.0.0"; // Version of the Mod.  (MUST BE SET)
-        public const string DownloadLink = null; // Download Link for the Mod.  (Set as null if none)
+        public const string Name = "Content Mod"; 
+        public const string Description = "A mod to Cheat in Content Warning"; 
+        public const string Author = "DXXNS / SnickersIZ"; 
+        public const string Company = null; 
+        public const string Version = "1.0.0"; 
+        public const string DownloadLink = null;
     }
 
     public class TestMod : MelonMod
