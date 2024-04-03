@@ -18,26 +18,25 @@ namespace TestMod
     public class TestMod : MelonMod
     {
 
-
-        public override void OnSceneWasLoaded(int buildindex, string sceneName) // Runs when a Scene has Loaded and is passed the Scene's Build Index and Name.
+        public override void OnSceneWasInitialized(int buildIndex, string sceneName)
         {
-            MelonLogger.Msg("OnSceneWasLoaded: " + buildindex.ToString() + " | " + sceneName);
-        }
 
-        public override void OnSceneWasInitialized(int buildindex, string sceneName) // Runs when a Scene has Initialized and is passed the Scene's Build Index and Name.
-        {
-            MelonLogger.Msg("OnSceneWasInitialized: " + buildindex.ToString() + " | " + sceneName);
-            /*foreach (string persistentID in new ItemDatabase().lastLoadedPersistentIDs)
+            if (buildIndex == 2)
             {
-                MelonLogger.Msg(persistentID);
-            }*/
-        }
+                TestMod.Load = new UnityEngine.GameObject();
+                TestMod.Load.AddComponent<Fullbright>();
+            }
+            
+            
 
-        public override void OnSceneWasUnloaded(int buildIndex, string sceneName) {
-            MelonLogger.Msg("OnSceneWasUnloaded: " + buildIndex.ToString() + " | " + sceneName);
+            MelonLogger.Msg(buildIndex + " - "+ sceneName);
         }
-        public Rect windowRect = new Rect(20, 20, 200, 200);
+        private static GameObject Load;
+        //Window Pos and size
+        public Rect windowRect = new Rect(20, 20, 300, 300);
 
+
+        //Menu Background
         private Texture2D MakeTex(int width, int height, Color color)
         {
             Color[] pix = new Color[width * height];
@@ -50,6 +49,8 @@ namespace TestMod
             result.Apply();
             return result;
         }
+
+        //test var lol
 
         public bool gay = false;
         public override void OnGUI()
@@ -69,9 +70,8 @@ namespace TestMod
             customStyle.onNormal.textColor = Color.white; // Adjust text color as needed
             customStyle.hover.textColor = Color.white; // Adjust text color as needed
 
-            if (gay)
-                ESP.EnemyESP();
-
+            
+            ESP.EnemyESP();
 
             windowRect = GUI.Window(0, windowRect, Window, "Content Kindergarden", customStyle);
         }
@@ -79,16 +79,78 @@ namespace TestMod
         public override void OnUpdate()
         {
             Modules.RunModules();
+
+            
         }
-        public string schtring = "";
+        
         
         private void Window(int windowID)
         {
-            Modules.infHeal = GUILayout.Toggle(Modules.infHeal, "Inf heal");
-            Modules.infOxy = GUILayout.Toggle(Modules.infOxy, "Inf Oxy");
-            Modules.infStam = GUILayout.Toggle(Modules.infStam, "Inf Stam");
-            gay = GUILayout.Toggle(gay, "sex");
+            GUILayout.BeginHorizontal();
+            if(GUILayout.Button("Player"))
+            {
+                Modules.worldw=false;
+                Modules.playerw=true;
+                Modules.miscw=false;
+                Modules.espw = false;
+            }
+            if (GUILayout.Button("ESP"))
+            {
+                Modules.worldw = false;
+                Modules.playerw = false;
+                Modules.miscw = false;
+                Modules.espw = true;
+            }
+            if (GUILayout.Button("World"))
+            {
+                Modules.worldw = true;
+                Modules.playerw = false;
+                Modules.miscw = false;
+                Modules.espw = false;
+            }
+            if (GUILayout.Button("Misc"))
+            {
+                Modules.worldw = false;
+                Modules.playerw = false;
+                Modules.miscw = true;
+                Modules.espw = false;
+            }
+            GUILayout.EndHorizontal();
+
+            if (Modules.playerw)
+            {
+                Modules.infHeal = GUILayout.Toggle(Modules.infHeal, "Inf heal");
+                Modules.infOxy = GUILayout.Toggle(Modules.infOxy, "Inf Oxy");
+                Modules.infStam = GUILayout.Toggle(Modules.infStam, "Inf Stam");
+                Modules.infJump = GUILayout.Toggle(Modules.infJump, "Inf Jump");
+                Modules.preventDeath = GUILayout.Toggle(Modules.preventDeath, "Prevent Death");
+                GUILayout.Space(10);
+                GUILayout.Label("Custom Speed Moduleation: "+ Modules.speed);
+                Modules.speed = GUILayout.HorizontalSlider(Modules.speed, 2.3f, 10f);
+            }
+            if (Modules.espw)
+            {
+                Modules.teamESP = GUILayout.Toggle(Modules.teamESP, "Team ESP");
+                Modules.divingBox = GUILayout.Toggle(Modules.divingBox, "Diving Bell ESP");
+                Modules.mobESP = GUILayout.Toggle(Modules.mobESP, "Mob ESP");
+                if (Modules.mobESP)
+                {
+                    GUILayout.BeginHorizontal();
+                    Modules.mobTracer = GUILayout.Toggle(Modules.mobTracer, "Mob Tracer");
+                    GUILayout.EndHorizontal();
+                }
+            }
+            if (Modules.worldw)
+            {
+                GUILayout.Label("Kill all mobs coming soon");
+            }
+            if (Modules.miscw)
+            {
+                GUILayout.Label("leave emty for later");
+            }
             
+            
+
             GUI.DragWindow();
         }
 
