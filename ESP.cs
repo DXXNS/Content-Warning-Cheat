@@ -23,7 +23,7 @@ namespace TestMod
         public static GameObject[] botTypes;
 
 
-        public static void EnemyESP()
+        public static void RunESP()
         {
             if (Modules.teamESP)
             {

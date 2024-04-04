@@ -11,7 +11,7 @@ namespace TestMod
         public const string Description = "A mod to Cheat in Content Warning"; 
         public const string Author = "DXXNS / SnickersIZ"; 
         public const string Company = null; 
-        public const string Version = "1.0.0"; 
+        public const string Version = "0.0.3"; 
         public const string DownloadLink = null;
     }
 
@@ -21,17 +21,14 @@ namespace TestMod
         public override void OnSceneWasInitialized(int buildIndex, string sceneName)
         {
 
-            if (buildIndex == 2)
-            {
-                TestMod.Load = new UnityEngine.GameObject();
-                TestMod.Load.AddComponent<Fullbright>();
-            }
+           
             
             
-
-            MelonLogger.Msg(buildIndex + " - "+ sceneName);
+            //Open for debug purposes
+            //MelonLogger.Msg(buildIndex + " - "+ sceneName);
         }
-        private static GameObject Load;
+
+        
         //Window Pos and size
         public Rect windowRect = new Rect(20, 20, 300, 300);
 
@@ -52,9 +49,12 @@ namespace TestMod
 
         //test var lol
 
-        public bool gay = false;
+        
         public override void OnGUI()
         {
+            if (Modules.Watermark)
+                Watermark.Call();
+
             //set window style
             GUIStyle customStyle = new GUIStyle(GUI.skin.window);
 
@@ -70,22 +70,58 @@ namespace TestMod
             customStyle.onNormal.textColor = Color.white; // Adjust text color as needed
             customStyle.hover.textColor = Color.white; // Adjust text color as needed
 
-            
-            ESP.EnemyESP();
+            //Implementation of the tooltip
+            if (Modules.toolTip)
+            {
+                GUI.Label(new Rect(0, 0, Screen.width, 100), "Menu is on INSERT\nPress DEL to Remove Tooltip");
+            }
 
-            windowRect = GUI.Window(0, windowRect, Window, "Content Kindergarden", customStyle);
+            ESP.RunESP();
+
+            
+
+            if (!Modules.menuToggle)
+                return;
+
+            windowRect = GUI.Window(0, windowRect, Window, "Content Warning", customStyle);
         }
 
         public override void OnUpdate()
         {
+            
+            //Hide and show for the menu
+            if (Input.GetKeyUp(KeyCode.Insert))
+            {
+                Modules.menuToggle = !Modules.menuToggle;
+
+                // so it doesn't make your cursor disappear in escape menus
+                if (Modules.menuToggle)
+                {
+                    Modules.OldCursorVisible = Cursor.visible;
+                    Modules.OldCursorLockMode = Cursor.lockState;
+                    Cursor.visible = true;
+                    Cursor.lockState = CursorLockMode.None;
+                }
+                else
+                {
+                    Cursor.visible = Modules.OldCursorVisible;
+                    Cursor.lockState = Modules.OldCursorLockMode;
+                }
+            }
+            if (Input.GetKeyDown(KeyCode.Delete))
+                Modules.toolTip = false;
+
+
+
             Modules.RunModules();
 
             
         }
         
-        
+        //Window
         private void Window(int windowID)
         {
+            //4 Categorys
             GUILayout.BeginHorizontal();
             if(GUILayout.Button("Player"))
             {
@@ -117,6 +153,8 @@ namespace TestMod
             }
             GUILayout.EndHorizontal();
 
+
+            //Window player
             if (Modules.playerw)
             {
                 Modules.infHeal = GUILayout.Toggle(Modules.infHeal, "Inf heal");
@@ -125,9 +163,10 @@ namespace TestMod
                 Modules.infJump = GUILayout.Toggle(Modules.infJump, "Inf Jump");
                 Modules.preventDeath = GUILayout.Toggle(Modules.preventDeath, "Prevent Death");
                 GUILayout.Space(10);
-                GUILayout.Label("Custom Speed Moduleation: "+ Modules.speed);
+                GUILayout.Label("Custom Speed Modulation: "+ Modules.speed);
                 Modules.speed = GUILayout.HorizontalSlider(Modules.speed, 2.3f, 10f);
             }
+            //window esp
             if (Modules.espw)
             {
                 Modules.teamESP = GUILayout.Toggle(Modules.teamESP, "Team ESP");
@@ -140,13 +179,23 @@ namespace TestMod
                     GUILayout.EndHorizontal();
                 }
             }
+            //window world
             if (Modules.worldw)
             {
-                GUILayout.Label("Kill all mobs coming soon");
+                Modules.killAll = GUILayout.Button("Kill all Mobs");
             }
+            //window misc
             if (Modules.miscw)
             {
-                GUILayout.Label("leave emty for later");
+                Modules.Watermark = GUILayout.Toggle(Modules.Watermark, "Watermark & Active Modules");
+                Modules.goodLight = GUILayout.Button("Add own light to scene");
+                Modules.customFOV = GUILayout.Toggle(Modules.customFOV, "Custom FOV");
+                if (Modules.customFOV)
+                {
+                    GUILayout.Label("FOV: " + Modules.cusFOVv);
+                    Modules.cusFOVv = GUILayout.HorizontalSlider(Modules.cusFOVv, 1f, 179f);
+                }
+                Modules.delRay = GUILayout.Button("Add Delete Ray");
             }
             
             

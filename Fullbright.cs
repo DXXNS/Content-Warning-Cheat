@@ -11,7 +11,7 @@ namespace TestMod
         public Color lightColor = Color.white; // Customize the default light color
         public float lightIntensity = 100.5f; // Customize the default light intensity
         public float lightRange = 200.0f; // Customize the default light range
-        public float spotAngle = 130.0f; // Customize the default spot angle
+        public float spotAngle = 150.0f; // Customize the default spot angle
         public GameObject ligt;
         public void Update()
         {
@@ -32,18 +32,23 @@ namespace TestMod
                 // Check if there is an active camera
                 if (activeCamera != null)
                 {
-                    ligt = new GameObject("SpotLight");
-                    ligt.transform.position = activeCamera.transform.position;
+                    if (ligt == null)
+                    {
+                        ligt = new GameObject("SpotLight");
+                        ligt.transform.position = activeCamera.transform.position;
 
-                    // Attach the light component to the new GameObject
-                    Light newLight = ligt.AddComponent<Light>();
-                    newLight.type = LightType.Spot; // Set light type to spot
-                    newLight.color = lightColor; // Set light color
-                    newLight.intensity = lightIntensity; // Set light intensity
-                    newLight.range = lightRange; // Set light range
-                    newLight.spotAngle = spotAngle; // Set spot angle
+                        // Attach the light component to the new GameObject
+                        Light newLight = ligt.AddComponent<Light>();
+                        newLight.type = LightType.Spot; // Set light type to spot
+                        newLight.color = lightColor; // Set light color
+                        newLight.intensity = lightIntensity; // Set light intensity
+                        newLight.range = lightRange; // Set light range
+                        newLight.spotAngle = spotAngle; // Set spot angle
 
-                    MelonLogger.Msg("Light created");
+                        MelonLogger.Msg("Light created");
+                    }
+                    else
+                        MelonLogger.Msg("Light Already active");
                 }
                 else
                 {

@@ -45,6 +45,26 @@ namespace TestMod
         public static bool miscw = false;
 
 
+        public static bool toolTip = true;
+        public static bool Watermark = false;
+        //Custom  FOV
+        public static bool customFOV = false;
+        public static float cusFOVv = 60f;
+
+        public static bool ignoreWebs = false;
+
+
+        public static bool delRay = false;
+
+
+        public static bool menuToggle { get; set; }
+        public static bool OldCursorVisible { get; set; }
+        public static CursorLockMode OldCursorLockMode { get; set; }
+
+        public static GameObject c_light;
+        public static GameObject c_ray;
+
+
         public static void RunModules()
         {
             foreach (Player player in GameObject.FindObjectsOfType<Player>())
@@ -83,12 +103,52 @@ namespace TestMod
                 {
                     bot.Destroy();
                 }
-
+                killAll = false;
 
                 //BombItem found in files make a esp
                 //Bot weeping is with capcha
 
             }
+            if (goodLight)
+            {
+                c_light = new UnityEngine.GameObject();
+                c_light.AddComponent<Fullbright>();
+                goodLight = false;
+            }
+            if (delRay)
+            {
+                c_ray = new UnityEngine.GameObject();
+                c_ray.AddComponent<DeleteRay>();
+                delRay = false;
+            }
+
+
+            if (customFOV)
+            {
+
+                SetFOV(cusFOVv, Camera.main);
+            }
+            if (ignoreWebs)
+            {
+                foreach (Web web in GameObject.FindObjectsOfType<Web>())
+                {
+                    web.wholeBodyFactor = 0f;
+                    web.distanceFactor = 0f;
+                    web.drag = 0f;
+                    web.force = 0f;
+
+                }
+                
+            }
         }
+        public static void SetFOV(float newFOV, Camera cam)
+        {
+            // Clamp FOV to a reasonable range (optional)
+            newFOV = Mathf.Clamp(newFOV, 1f, 179f);
+
+            // Set new FOV
+            cam.fieldOfView = newFOV;
+        }
+
     }
 }
