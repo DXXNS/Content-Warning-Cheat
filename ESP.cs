@@ -8,6 +8,7 @@ using UnityEngine;
 using DefaultNamespace;
 using System;
 using System.Reflection;
+using MelonLoader;
 
 namespace TestMod
 {
@@ -22,6 +23,19 @@ namespace TestMod
         
         public static GameObject[] botTypes;
 
+        private static float timeSinceLastUpdate = 0.0f;
+        private static float updateInterval = 1f / 60f; // Mettre à jour 30 fois par seconde
+
+        public static void Update()
+        {
+            timeSinceLastUpdate += Time.deltaTime;
+
+            if (timeSinceLastUpdate >= updateInterval)
+            {
+                RunESP();
+                timeSinceLastUpdate = 0f;
+            }
+        }
 
         public static void RunESP()
         {
@@ -138,11 +152,36 @@ namespace TestMod
                     }
                 }
             }
+            if (Modules.itemESP)
+            {
+                ItemInstance[] items = GameObject.FindObjectsOfType<ItemInstance>();
+
+                foreach (ItemInstance itemInstance in items)
+                {
+                    Item item = itemInstance.item;
+                    Vector3 pivotPos = itemInstance.transform.position;
+                    Vector3 itemPos; itemPos.x = pivotPos.x; itemPos.z = pivotPos.z; itemPos.y = pivotPos.y;
+                    Vector3 w2s_itempos = Camera.main.WorldToScreenPoint(itemPos);
+
+                    if (w2s_itempos.z > 0f)
+                    {
+                        Render.DrawColorString(new Vector2(w2s_itempos.x, (float)Screen.height - w2s_itempos.y - 20f), item.name, Color.yellow, 12f);
+                        Render.DrawBox(w2s_itempos.x - 10f, (float)Screen.height - w2s_itempos.y - 10f, 20f, 20f, Color.yellow, 2f);
+                    }
+                }
+            }
+
+
+
+
+
 
         }
 
 
-        
+
+
+
 
 
 
