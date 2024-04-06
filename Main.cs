@@ -66,7 +66,7 @@ namespace TestMod
 
             if (Modules.toolTip)
             {
-                GUI.Label(new Rect(0, 0, Screen.width, 100), "Menu is on INSERT\nPress DEL to Remove Tooltip");
+                GUI.Label(new Rect(0, 0, Screen.width, 100), "Menu is on INSERT OR N\nPress DEL to Remove Tooltip");
             }
 
             breadcrumbsInstance?.OnGUI();
@@ -89,7 +89,7 @@ namespace TestMod
 
         public override void OnUpdate()
         {
-            if (Input.GetKeyUp(KeyCode.Insert))
+            if (Input.GetKeyUp(KeyCode.N) || Input.GetKeyUp(KeyCode.Insert))
             {
                 Modules.menuToggle = !Modules.menuToggle;
                 Cursor.visible = Modules.menuToggle ? true : Modules.OldCursorVisible;
@@ -250,7 +250,8 @@ namespace TestMod
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Money amount : ");
                 Modules.moneyfield = GUILayout.TextField(Modules.moneyfield, GUILayout.Width(100));
-
+                GUILayout.EndHorizontal();
+                GUILayout.BeginHorizontal();
                 if (GUILayout.Button("Add Money (Host Only)"))
                 {
                     int moneyToAdd;

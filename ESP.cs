@@ -42,34 +42,36 @@ namespace TestMod
                 //Weirdly gets the spiders pos too....
                 foreach (Player enemy in players)
                 {
-
-                    
-                    Vector3 pivotPos = enemy.HeadPosition();
-
-                    //In-Game Position
-                    Vector3 pivotPos1 = enemy.transform.position; //Pivot point NOT at the feet, at the center
-                    Vector3 playerFootPos; playerFootPos.x = pivotPos.x; playerFootPos.z = pivotPos.z; playerFootPos.y = pivotPos.y - 1.8f; //At the feet
-                    Vector3 playerHeadPos; playerHeadPos.x = pivotPos.x; playerHeadPos.z = pivotPos.z; playerHeadPos.y = pivotPos.y + 0.5f; //At the head
-
-                    //Screen Position
-                    Vector3 w2s_footpos = Camera.main.WorldToScreenPoint(playerFootPos);
-                    Vector3 w2s_headpos = Camera.main.WorldToScreenPoint(playerHeadPos);
-
-
-
-
-
-
-                    if (w2s_footpos.z > 0f && !enemy.IsLocal && enemy.name == "Player(Clone)")//
+                    if (enemy != null)
                     {
-                        //Render.DrawColorString(new Vector2(w2s_headpos.x, (float)Screen.height - w2s_headpos.y + 0.3f), "Teammates", limeColor, 12f);
-                        DrawBoxESP(w2s_footpos, w2s_headpos, limeColor);
 
-                        Render.DrawLine(new Vector2((float)(Screen.width / 2), (float)(Screen.height * 2)), new Vector2(w2s_footpos.x, (float)Screen.height - w2s_footpos.y), limeColor, 2f);
+                        Vector3 pivotPos = enemy.HeadPosition();
+
+                        //In-Game Position
+                        Vector3 pivotPos1 = enemy.transform.position; //Pivot point NOT at the feet, at the center
+                        Vector3 playerFootPos; playerFootPos.x = pivotPos.x; playerFootPos.z = pivotPos.z; playerFootPos.y = pivotPos.y - 1.8f; //At the feet
+                        Vector3 playerHeadPos; playerHeadPos.x = pivotPos.x; playerHeadPos.z = pivotPos.z; playerHeadPos.y = pivotPos.y + 0.5f; //At the head
+
+                        //Screen Position
+                        Vector3 w2s_footpos = Camera.main.WorldToScreenPoint(playerFootPos);
+                        Vector3 w2s_headpos = Camera.main.WorldToScreenPoint(playerHeadPos);
 
 
 
 
+
+
+                        if (w2s_footpos.z > 0f && !enemy.IsLocal && enemy.name == "Player(Clone)")//
+                        {
+                            //Render.DrawColorString(new Vector2(w2s_headpos.x, (float)Screen.height - w2s_headpos.y + 0.3f), "Teammates", limeColor, 12f);
+                            DrawBoxESP(w2s_footpos, w2s_headpos, limeColor);
+
+                            Render.DrawLine(new Vector2((float)(Screen.width / 2), (float)(Screen.height * 2)), new Vector2(w2s_footpos.x, (float)Screen.height - w2s_footpos.y), limeColor, 2f);
+
+
+
+
+                        }
                     }
                 }
                 //Trying to get somehow the Enemys Position
@@ -82,33 +84,34 @@ namespace TestMod
             {
                 foreach (Bot enemy in bots)
                 {
-
-
-
-
-                    //In-Game Position
-                    Vector3 pivotPos = enemy.transform.position; //Pivot point NOT at the feet, at the center
-
-                    Vector3 playerHeadPos; playerHeadPos.x = pivotPos.x; playerHeadPos.z = pivotPos.z; playerHeadPos.y = pivotPos.y; //At the head
-
-                    //Screen Position
-                    ;
-                    Vector3 w2s_headpos = Camera.main.WorldToScreenPoint(playerHeadPos);
-
-
-
-
-
-
-                    if (w2s_headpos.z > 0f)//
+                    if (enemy != null)
                     {
-                        Render.DrawColorString(new Vector2(w2s_headpos.x, (float)Screen.height - w2s_headpos.y + 0.3f), enemy.name, Color.red, 12f);
-                        if (Modules.mobTracer)
-                        Render.DrawLine(new Vector2((float)(Screen.width / 2), (float)(Screen.height * 2)), new Vector2(w2s_headpos.x, (float)Screen.height - w2s_headpos.y), Color.red, 2f);
+
+
+                        //In-Game Position
+                        Vector3 pivotPos = enemy.transform.position; //Pivot point NOT at the feet, at the center
+
+                        Vector3 playerHeadPos; playerHeadPos.x = pivotPos.x; playerHeadPos.z = pivotPos.z; playerHeadPos.y = pivotPos.y; //At the head
+
+                        //Screen Position
+                        ;
+                        Vector3 w2s_headpos = Camera.main.WorldToScreenPoint(playerHeadPos);
 
 
 
 
+
+
+                        if (w2s_headpos.z > 0f)//
+                        {
+                            Render.DrawColorString(new Vector2(w2s_headpos.x, (float)Screen.height - w2s_headpos.y + 0.3f), enemy.name, Color.red, 12f);
+                            if (Modules.mobTracer)
+                                Render.DrawLine(new Vector2((float)(Screen.width / 2), (float)(Screen.height * 2)), new Vector2(w2s_headpos.x, (float)Screen.height - w2s_headpos.y), Color.red, 2f);
+
+
+
+
+                        }
                     }
                 }
             }
@@ -119,34 +122,36 @@ namespace TestMod
 
                 foreach (UseDivingBellButton diving in divingBells)
                 {
-
-
-
-
-                    //In-Game Position
-                    Vector3 pivotPos = diving.transform.position;
-                    Vector3 playerFootPos; playerFootPos.x = pivotPos.x; playerFootPos.z = pivotPos.z; playerFootPos.y = pivotPos.y - 0.3f; //At the feet
-                    Vector3 playerHeadPos; playerHeadPos.x = pivotPos.x; playerHeadPos.z = pivotPos.z; playerHeadPos.y = pivotPos.y + 0.2f; //At the head
-
-                    //Screen Position
-                    Vector3 w2s_footpos = Camera.main.WorldToScreenPoint(playerFootPos);
-                    Vector3 w2s_headpos = Camera.main.WorldToScreenPoint(playerHeadPos);
-
-
-
-
-
-
-                    if (w2s_footpos.z > 0f)//
+                    if (diving != null)
                     {
-                        Render.DrawColorString(new Vector2(w2s_headpos.x, (float)Screen.height - w2s_headpos.y + 1f), "Diving Bell", lightBlue, 12f);
-                        DrawBox1(w2s_footpos, w2s_headpos, lightBlue);
-
-                        //Render.DrawLine(new Vector2((float)(Screen.width / 2), (float)(Screen.height * 2)), new Vector2(w2s_footpos.x, (float)Screen.height - w2s_footpos.y), rlimeColo, 2f);
 
 
 
+                        //In-Game Position
+                        Vector3 pivotPos = diving.transform.position;
+                        Vector3 playerFootPos; playerFootPos.x = pivotPos.x; playerFootPos.z = pivotPos.z; playerFootPos.y = pivotPos.y - 0.3f; //At the feet
+                        Vector3 playerHeadPos; playerHeadPos.x = pivotPos.x; playerHeadPos.z = pivotPos.z; playerHeadPos.y = pivotPos.y + 0.2f; //At the head
 
+                        //Screen Position
+                        Vector3 w2s_footpos = Camera.main.WorldToScreenPoint(playerFootPos);
+                        Vector3 w2s_headpos = Camera.main.WorldToScreenPoint(playerHeadPos);
+
+
+
+
+
+
+                        if (w2s_footpos.z > 0f)//
+                        {
+                            Render.DrawColorString(new Vector2(w2s_headpos.x, (float)Screen.height - w2s_headpos.y + 1f), "Diving Bell", lightBlue, 12f);
+                            DrawBox1(w2s_footpos, w2s_headpos, lightBlue);
+
+                            //Render.DrawLine(new Vector2((float)(Screen.width / 2), (float)(Screen.height * 2)), new Vector2(w2s_footpos.x, (float)Screen.height - w2s_footpos.y), rlimeColo, 2f);
+
+
+
+
+                        }
                     }
                 }
             }
@@ -154,15 +159,18 @@ namespace TestMod
             {
                 foreach (ItemInstance itemInstance in items)
                 {
-                    Item item = itemInstance.item;
-                    Vector3 pivotPos = itemInstance.transform.position;
-                    Vector3 itemPos; itemPos.x = pivotPos.x; itemPos.z = pivotPos.z; itemPos.y = pivotPos.y;
-                    Vector3 w2s_itempos = Camera.main.WorldToScreenPoint(itemPos);
-
-                    if (w2s_itempos.z > 0f)
+                    if (itemInstance != null)
                     {
-                        Render.DrawColorString(new Vector2(w2s_itempos.x, (float)Screen.height - w2s_itempos.y - 20f), item.name, Color.yellow, 12f);
-                        Render.DrawBox(w2s_itempos.x - 10f, (float)Screen.height - w2s_itempos.y - 10f, 20f, 20f, Color.yellow, 2f);
+                        Item item = itemInstance.item;
+                        Vector3 pivotPos = itemInstance.transform.position;
+                        Vector3 itemPos; itemPos.x = pivotPos.x; itemPos.z = pivotPos.z; itemPos.y = pivotPos.y;
+                        Vector3 w2s_itempos = Camera.main.WorldToScreenPoint(itemPos);
+
+                        if (w2s_itempos.z > 0f)
+                        {
+                            Render.DrawColorString(new Vector2(w2s_itempos.x, (float)Screen.height - w2s_itempos.y - 20f), item.name, Color.yellow, 12f);
+                            Render.DrawBox(w2s_itempos.x - 10f, (float)Screen.height - w2s_itempos.y - 10f, 20f, 20f, Color.yellow, 2f);
+                        }
                     }
                 }
             }
