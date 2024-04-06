@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static UnityEngine.EventSystems.EventTrigger;
 using UnityEngine;
 using DefaultNamespace;
-using System;
-using System.Reflection;
 using MelonLoader;
 
 namespace TestMod
@@ -15,16 +8,15 @@ namespace TestMod
     public class ESP
     {
         static Color lightBlue = new Color(0.0f, 1.0f, 1.0f); // R = 0, G = 1, B = 1
-
         public static Color limeColor = new Color(0.0f, 1.0f, 0.0f); // R = 0, G = 1, B = 0
 
-
-
-        
-        public static GameObject[] botTypes;
-
         private static float timeSinceLastUpdate = 0.0f;
-        private static float updateInterval = 1f / 60f; // Mettre à jour 30 fois par seconde
+        private static float updateInterval = 1f; // Update 60 times per second
+
+        private static Player[] players;
+        private static Bot[] bots;
+        private static UseDivingBellButton[] divingBells;
+        private static ItemInstance[] items;
 
         public static void Update()
         {
@@ -32,9 +24,15 @@ namespace TestMod
 
             if (timeSinceLastUpdate >= updateInterval)
             {
-                RunESP();
+                players = GameObject.FindObjectsOfType<Player>();
+                bots = GameObject.FindObjectsOfType<Bot>();
+                divingBells = GameObject.FindObjectsOfType<UseDivingBellButton>();
+                items = GameObject.FindObjectsOfType<ItemInstance>();
+
+                
                 timeSinceLastUpdate = 0f;
             }
+            RunESP();
         }
 
         public static void RunESP()
@@ -42,7 +40,7 @@ namespace TestMod
             if (Modules.teamESP)
             {
                 //Weirdly gets the spiders pos too....
-                foreach (Player enemy in GameObject.FindObjectsOfType<Player>())
+                foreach (Player enemy in players)
                 {
 
                     
@@ -82,7 +80,7 @@ namespace TestMod
 
             if (Modules.mobESP)
             {
-                foreach (Bot enemy in GameObject.FindObjectsOfType<Bot>())
+                foreach (Bot enemy in bots)
                 {
 
 
@@ -119,7 +117,7 @@ namespace TestMod
             if (Modules.divingBox)
             {
 
-                foreach (UseDivingBellButton diving in GameObject.FindObjectsOfType<UseDivingBellButton>())
+                foreach (UseDivingBellButton diving in divingBells)
                 {
 
 
@@ -154,8 +152,6 @@ namespace TestMod
             }
             if (Modules.itemESP)
             {
-                ItemInstance[] items = GameObject.FindObjectsOfType<ItemInstance>();
-
                 foreach (ItemInstance itemInstance in items)
                 {
                     Item item = itemInstance.item;
