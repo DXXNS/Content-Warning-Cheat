@@ -41,11 +41,20 @@ namespace TestMod
         public static CSteamID actual;
         public static bool antiragdoll = false;
         public static bool add4players = false;
+        public static bool infiniteBattery = false;
+        private static float timeSinceLastUpdate = 0.0f;
+        private static float updateInterval2 = 1f; // Update 60 times per second
 
         public static void RunModules()
         {
 
             originalplayer = Player.localPlayer;
+            if (timeSinceLastUpdate >= updateInterval2)
+            {
+                shocksticks = GameObject.FindObjectsOfType<ShockStickTrigger>();
+                timeSinceLastUpdate = 0f;
+            }
+            timeSinceLastUpdate += Time.deltaTime;
             if (Time.time - lastUpdateTime >= updateInterval)
             {
                 foreach (Player player in GameObject.FindObjectsOfType<Player>())
@@ -81,7 +90,7 @@ namespace TestMod
                     if (infinitesshockstick)
                     {
                         
-                        shocksticks = GameObject.FindObjectsOfType<ShockStickTrigger>();
+                        
 
                         foreach (ShockStickTrigger shockstick in shocksticks)
                         {
@@ -137,7 +146,11 @@ namespace TestMod
                         
                         
                     }
-                    if(add4players)
+                    if(infiniteBattery)
+                    {
+                        Battery.Update();
+                    }
+                    if (add4players)
                     { Steamworks.SteamGameServer.SetMaxPlayerCount(8);
                         for (int i = 0; i < 5; i++)
                         {

@@ -183,6 +183,7 @@ namespace TestMod
                 Modules.speed = GUILayout.HorizontalSlider(Modules.speed, 2.3f, 10f);
                 Modules.respawn = GUILayout.Button("Revive");
                 Modules.infinitesshockstick = GUILayout.Toggle(Modules.infinitesshockstick, "Infinite Shock Stick");
+                Modules.infiniteBattery = GUILayout.Toggle(Modules.infiniteBattery, "Infinite Battery");
             }
 
 
