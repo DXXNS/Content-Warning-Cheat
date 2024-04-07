@@ -56,7 +56,6 @@
 - Inf Oxygen
 - Inf Stamina
 - Inf Jump
-- BreadCrumbs
 - Prevent Death (from lasers for example)
 - Speed Modulation (Modifies the Sprint speed)
 
@@ -66,24 +65,13 @@
 - Diving Bell ESP
 - Mob Esp
   - Mob Tracers
-- Item ESP
 
 ### World
-- Kill all Mobs
-- Spawn item
-- Spawn Monster
+- Features in work
 
 
 ### Misc
-- Watermark & Active Modules
-- Add own light to scene (press o to see then)
-- Custom FOV
-- ShopLifter
-- Add Money (Host Only)
-- Duplicate item
-
-### Enemy
-Features in work
+- Features in work
 
 
 

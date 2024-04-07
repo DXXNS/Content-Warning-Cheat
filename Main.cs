@@ -4,25 +4,27 @@ using UnityEngine;
 using TestMod.BreadCrumbs;
 using HarmonyLib;
 using System.Linq;
+using Photon.Pun;
+using System;
+using Photon.Realtime;
+using Steamworks;
 
 namespace TestMod
 {
     public static class BuildInfo
     {
-        public const string Name = "Content Mod";
-        public const string Description = "A mod to Cheat in Content Warning";
-        public const string Author = "DXXNS / SnickersIZ / Akira";
-        public const string Company = null;
-        public const string Version = "0.0.4";
-        public const string DownloadLink = null;
+        public const string Name = "Content Mod"; public const string Description = "A mod to Cheat in Content Warning"; public const string Author = "DXXNS / SnickersIZ / Akira"; public const string Company = null; public const string Version = "0.0.4"; public const string DownloadLink = null;
     }
 
     public class TestMod : MelonMod
     {
         private Breadcrumbs breadcrumbsInstance;
-        public List<string> itemNames = new List<string>();
         private static GameObject Load;
-        public Rect windowRect = new Rect(20, 20, 300, 300);
+        public Rect windowRect = new Rect(20, 20, 400, 400);
+        public static List<Player> PlayerControllers = new List<Player>();
+        public static List<Room> Rooms = new List<Room>();
+        Photon.Realtime.Player[] otherPlayers;
+        public SteamAPICall_t hAPICall;
 
         public override void OnSceneWasInitialized(int buildIndex, string sceneName)
         {
@@ -33,17 +35,19 @@ namespace TestMod
             breadcrumbsInstance = new Breadcrumbs();
             var harmony = new HarmonyLib.Harmony("com.Akira.TestMod");
             harmony.UnpatchAll();
-            MelonLogger.Msg($"{buildIndex} - {sceneName}");
+            MelonLogger.Msg($"Scene initialized: {buildIndex} - {sceneName}");
+            otherPlayers = PhotonNetwork.PlayerListOthers;
+            hAPICall = SteamMatchmaking.RequestLobbyList();
         }
 
         private Texture2D MakeTex(int width, int height, Color color)
         {
-            Color[] pix = new Color[width * height];
+            var pix = new Color[width * height];
             for (int i = 0; i < pix.Length; ++i)
             {
                 pix[i] = color;
             }
-            Texture2D result = new Texture2D(width, height);
+            var result = new Texture2D(width, height);
             result.SetPixels(pix);
             result.Apply();
             return result;
@@ -54,7 +58,7 @@ namespace TestMod
             if (Modules.Watermark)
                 Watermark.Call();
 
-            GUIStyle customStyle = new GUIStyle(GUI.skin.window);
+            var customStyle = new GUIStyle(GUI.skin.window);
             customStyle.normal.background = MakeTex(1, 1, new Color(0.1f, 0.1f, 0.1f, 1.0f));
             customStyle.focused.background = MakeTex(1, 1, new Color(0.1f, 0.1f, 0.1f, 1.0f));
             customStyle.onNormal.background = MakeTex(1, 1, new Color(0.1f, 0.1f, 0.1f, 1.0f));
@@ -78,26 +82,26 @@ namespace TestMod
             windowRect = GUI.Window(0, windowRect, Window, "Content Warning", customStyle);
         }
 
-        public List<string> monsterNames = new List<string>
-        {
-            "BarnacleBall", "BigSlap", "Bombs", "Dog", "Ear", "EyeGuy", "Flicker", "Ghost", "Jelly", "Knifo",
-            "Larva", "Mouthe", "Slurper", "Snatcho", "Spider", "Snail", "Toolkit_Fan", "Toolkit_Hammer",
-            "Toolkit_Iron", "Toolkit_Vaccuum", "Toolkit_Whisk", "Toolkit_Wisk", "Weeping"
-        };
-
-
-
+        float natNextUpdateTime = 0f;
         public override void OnUpdate()
         {
+            natNextUpdateTime += Time.deltaTime;
+
+            if (natNextUpdateTime >= 1f)
+            {
+                PlayerControllers = Resources.FindObjectsOfTypeAll<Player>().ToList();
+                Rooms = Resources.FindObjectsOfTypeAll<Room>().ToList();
+                otherPlayers = PhotonNetwork.PlayerListOthers;
+                natNextUpdateTime = 0f;
+            }
             if (Input.GetKeyUp(KeyCode.N) || Input.GetKeyUp(KeyCode.Insert))
             {
                 Modules.menuToggle = !Modules.menuToggle;
-                Cursor.visible = Modules.menuToggle ? true : Modules.OldCursorVisible;
+                Cursor.visible = Modules.menuToggle;
                 Cursor.lockState = Modules.menuToggle ? CursorLockMode.None : Modules.OldCursorLockMode;
             }
             if (Input.GetKeyDown(KeyCode.Delete))
                 Modules.toolTip = false;
-
             if (Modules.shopLifter)
             {
                 if (!Modules.hasLifted)
@@ -115,14 +119,42 @@ namespace TestMod
             }
             Modules.RunModules();
         }
-
-        private KeyCode breadcrumbsKeybind = KeyCode.B;
-        private string moneyInput = "0";
         private void SetAllModulesFalse(ref bool moduleToActivate)
         {
             Modules.worldw = Modules.playerw = Modules.miscw = Modules.espw = Modules.enemyw = false;
             moduleToActivate = true;
         }
+        bool itemhasbeeninitialized = false;
+       public List<string> monsterNames = new List<string>
+{
+    "BarnacleBall",    // spawns
+    "BigSlap",         // spawns
+    "Bombs",           // spawns
+    "Dog",             // spawns
+    "Ear",             // spawns
+    "EyeGuy",          // spawns
+    "Flicker",         // spawns
+    "Ghost",           // spawns
+    "Jello",           // spawns
+    "Knifo",           // spawns
+    "Larva",           // spawns
+    "Mouthe",          // spawns
+    "Slurper",         // spawns
+    "Snatcho",         // spawns
+    "Spider",          // spawns
+    "Zombe",          // spawns
+    "Toolkit_Fan",     // spawns
+    "Toolkit_Hammer",  // spawns
+    "Toolkit_Iron",    // spawns
+    "Toolkit_Vaccuum", // spawns
+    "Toolkit_Whisk",   // spawns
+    "Toolkit_Wisk",    // spawns
+    "Weeping", // spawns
+
+
+};
+
+        public List<string> itemNames = new List<string>();
         private void Window(int windowID)
         {
             GUILayout.BeginHorizontal();
@@ -140,21 +172,22 @@ namespace TestMod
 
             if (Modules.playerw)
             {
-                Modules.infHeal = GUILayout.Toggle(Modules.infHeal, "Inf heal");
-                Modules.infOxy = GUILayout.Toggle(Modules.infOxy, "Inf Oxy");
-                Modules.infStam = GUILayout.Toggle(Modules.infStam, "Inf Stam");
-                Modules.infJump = GUILayout.Toggle(Modules.infJump, "Inf Jump");
+                Modules.infHeal = GUILayout.Toggle(Modules.infHeal, "Infinite heal");
+                Modules.infOxy = GUILayout.Toggle(Modules.infOxy, "Infinite Oxy");
+                Modules.infStam = GUILayout.Toggle(Modules.infStam, "Infinite Stam");
+                Modules.infJump = GUILayout.Toggle(Modules.infJump, "Infinite Jump");
                 Modules.breadCrumbs = GUILayout.Toggle(Modules.breadCrumbs, "BreadCrumbs");
                 Modules.preventDeath = GUILayout.Toggle(Modules.preventDeath, "Prevent Death");
                 GUILayout.Space(10);
                 GUILayout.Label("Custom Speed Modulation: " + Modules.speed);
                 Modules.speed = GUILayout.HorizontalSlider(Modules.speed, 2.3f, 10f);
                 Modules.respawn = GUILayout.Button("Revive");
+                Modules.infinitesshockstick = GUILayout.Toggle(Modules.infinitesshockstick, "Infinite Shock Stick");
             }
 
 
-            bool itemhasbeeninitialized = false;
-            if (Modules.espw)
+
+                if (Modules.espw)
             {
                 Modules.teamESP = GUILayout.Toggle(Modules.teamESP, "Team ESP");
                 Modules.divingBox = GUILayout.Toggle(Modules.divingBox, "Diving Bell ESP");
@@ -178,7 +211,6 @@ namespace TestMod
                         foreach (var item in ItemDatabase.Instance.lastLoadedItems)
                         {
                             itemNames.Add(item.name);
-                            MelonLogger.Msg(item.name);
                         }
                         itemhasbeeninitialized = true;
                     }
@@ -233,6 +265,27 @@ namespace TestMod
                         MonsterSpawner.SpawnMonster(Modules.selectedMonsterName);
                     }
                 }
+                GUILayout.BeginVertical(GUI.skin.box);
+                
+                if (GUILayout.Button("Request Lobby List"))
+                {
+                    hAPICall = SteamMatchmaking.RequestLobbyList();
+                    Debug.Log("Requested Lobby List");
+                }
+
+                if (GUILayout.Button("Random Join"))
+                {
+                    MainMenuHandler.Instance.JoinRandom();
+
+                }
+
+                /*if (GUILayout.Button("OnCreatedRoom"))
+                {
+                    MainMenuHandler.Instance.OnCreatedRoom();
+
+                }*/
+                GUILayout.EndVertical();
+
             }
 
             if (Modules.miscw)
@@ -292,78 +345,121 @@ namespace TestMod
                 }
 
                 Modules.duplicateItems = GUILayout.Toggle(Modules.duplicator, "Duplicate " + Modules.selectedItemName);
+                /*Modules.add4players = GUILayout.Button("Add 4 Players");*/
             }
 
             if (Modules.enemyw)
             {
-                var enemyNames = GameObject.FindObjectsOfType<Bot>()
-                    .Select(enemy => enemy.name)
-                    .Distinct()
-                    .ToList();
-
-                if (GUILayout.Button(Modules.selectedEnemyName))
+                try
                 {
-                    Modules.dropdownOpenEnemy = !Modules.dropdownOpenEnemy;
-                }
+                    var enemyNames = GameObject.FindObjectsOfType<Bot>()
+                        .Select(enemy => enemy.name)
+                        .Distinct()
+                        .ToList();
 
-                if (Modules.dropdownOpenEnemy)
-                {
-                    Modules.scrollPositionEnemy = GUILayout.BeginScrollView(Modules.scrollPositionEnemy);
-                    foreach (string enemyName in enemyNames)
+                    if (GUILayout.Button(Modules.selectedEnemyName))
                     {
-                        if (GUILayout.Button(enemyName))
+                        Modules.dropdownOpenEnemy = !Modules.dropdownOpenEnemy;
+                    }
+
+                    if (Modules.dropdownOpenEnemy && enemyNames.Count > 0)
+                    {
+                        Modules.scrollPositionEnemy = GUILayout.BeginScrollView(Modules.scrollPositionEnemy);
+                        foreach (string enemyName in enemyNames)
                         {
-                            Modules.selectedEnemyName = enemyName;
-                            Modules.dropdownOpenEnemy = false;
+                            if (GUILayout.Button(enemyName))
+                            {
+                                Modules.selectedEnemyName = enemyName;
+                                Modules.dropdownOpenEnemy = false;
+                            }
+                        }
+                        GUILayout.EndScrollView();
+                    }
+
+                    var playerNames = GameObject.FindObjectsOfType<Player>()
+                        .Select(player => player.name)
+                        .Distinct()
+                        .ToList();
+
+                    if (GUILayout.Button(Modules.selectedPlayerName))
+                    {
+                        Modules.dropdownOpenPlayer = !Modules.dropdownOpenPlayer;
+                    }
+
+                    if (Modules.dropdownOpenPlayer)
+                    {
+                        Modules.scrollPositionPlayer = GUILayout.BeginScrollView(Modules.scrollPositionPlayer);
+                        foreach (Player player in PlayerControllers)
+                        {
+                            if (player == null)
+                            {
+                                //MelonLogger.Msg("Player is null");
+                            }
+                            else if (player.refs == null)
+                            {
+                                //MelonLogger.Msg("Player.refs is null");
+                            }
+                            else if (player.refs.view == null)
+                            {
+                                //MelonLogger.Msg("Player.refs.view is null");
+                            }
+                            else if (player.refs.view.Controller == null)
+                            {
+                                //MelonLogger.Msg("Player.refs.view.Controller is null");
+                            }
+                            else
+                            {
+                                if (!player.ai)
+                                {
+                                    string playerName = player.refs.view.Controller.ToString();
+                                    if (!string.IsNullOrEmpty(playerName) && GUILayout.Button(playerName))
+                                    {
+                                        Modules.selectedPlayerName = playerName;
+                                        Modules.dropdownOpenPlayer = false;
+                                    }
+                                }
+                            }
+                        }
+                        GUILayout.EndScrollView();
+                    }
+                    else
+                    {
+                        // Ajout d'un log lorsque le menu déroulant n'est pas ouvert
+                    }
+
+
+
+                    Player selectedPlayer = PlayerControllers
+                    .FirstOrDefault(player => player.refs != null && player.refs.view != null && player.refs.view.Controller != null && player.refs.view.Controller.ToString() == Modules.selectedPlayerName);
+                    Bot selectedMonster = GameObject.FindObjectsOfType<Bot>()
+                        .FirstOrDefault(monster => monster.name == Modules.selectedEnemyName);
+
+                    if (selectedPlayer != null && selectedMonster != null)
+                    {
+                        
+                        if (GUILayout.Button("AddIgnore"))
+                        {
+                            Enemy.AddIgnore(selectedPlayer, selectedMonster);
+                        }
+
+                        if (GUILayout.Button("DelIgnore"))
+                        {
+                            Enemy.RemoveIgnore(selectedPlayer, selectedMonster);
+                        }
+
+                        if (GUILayout.Button("IgnoreAll"))
+                        {
+                            Enemy.AllIgnore(selectedPlayer);
                         }
                     }
-                    GUILayout.EndScrollView();
                 }
-
-                var playerNames = GameObject.FindObjectsOfType<Player>()
-                    .Select(player => player.name)
-                    .Distinct()
-                    .ToList();
-
-                if (GUILayout.Button(Modules.selectedPlayerName))
+                catch (Exception ex)
                 {
-                    Modules.dropdownOpenPlayer = !Modules.dropdownOpenPlayer;
-                }
-
-                if (Modules.dropdownOpenPlayer)
-                {
-                    Modules.scrollPositionPlayer = GUILayout.BeginScrollView(Modules.scrollPositionPlayer);
-                    foreach (string playerName in playerNames)
-                    {
-                        if (GUILayout.Button(playerName))
-                        {
-                            Modules.selectedPlayerName = playerName;
-                            Modules.dropdownOpenPlayer = false;
-                        }
-                    }
-                    GUILayout.EndScrollView();
-                }
-
-                Player selectedPlayer = GameObject.FindObjectsOfType<Player>()
-                    .FirstOrDefault(player => player.name == Modules.selectedPlayerName);
-                Bot selectedMonster = GameObject.FindObjectsOfType<Bot>()
-                    .FirstOrDefault(monster => monster.name == Modules.selectedEnemyName);
-
-                if (GUILayout.Button("AddIgnore"))
-                {
-                    Enemy.AddIgnore(selectedPlayer, selectedMonster);
-                }
-
-                if (GUILayout.Button("DelIgnore"))
-                {
-                    Enemy.RemoveIgnore(selectedPlayer, selectedMonster);
-                }
-
-                if (GUILayout.Button("IgnoreAll"))
-                {
-                    Enemy.AllIgnore(selectedPlayer);
+                    // Log the exception to the console
+                    MelonLogger.Error($"An error occurred in the enemy module: {ex}");
                 }
             }
+
 
             GUI.DragWindow();
 

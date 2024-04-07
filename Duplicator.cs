@@ -12,7 +12,6 @@ public class Duplicator
         {
             ItemInstance[] items = GameObject.FindObjectsOfType<ItemInstance>();
 
-            MelonLogger.Msg("Found " + items.Length + " items."); // Log the number of found items
 
             foreach (ItemInstance itemInstance in items)
             {
@@ -58,13 +57,11 @@ public class Duplicator
 
         if (item != null)
         {
-            Debug.Log("Spawn item: " + item.name);
             Vector3 debugItemSpawnPos = MainCamera.instance.GetDebugItemSpawnPos();
             Player.localPlayer.RequestCreatePickup(item, new ItemInstanceData(Guid.NewGuid()), debugItemSpawnPos, UnityEngine.Quaternion.identity);
         }
         else
         {
-            Debug.Log("Item not found: " + itemName);
         }
     }
 

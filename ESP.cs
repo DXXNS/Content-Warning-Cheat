@@ -2,7 +2,10 @@
 using UnityEngine;
 using DefaultNamespace;
 using MelonLoader;
-
+using UnityEngine.Rendering;
+using System.Collections.Generic;
+using System.Linq;
+using TestMod;
 namespace TestMod
 {
     public class ESP
@@ -11,12 +14,14 @@ namespace TestMod
         public static Color limeColor = new Color(0.0f, 1.0f, 0.0f); // R = 0, G = 1, B = 0
 
         private static float timeSinceLastUpdate = 0.0f;
-        private static float updateInterval = 1f; // Update 60 times per second
+        private static float updateInterval = 2f; // Update 60 times per second
 
         private static Player[] players;
         private static Bot[] bots;
         private static UseDivingBellButton[] divingBells;
         private static ItemInstance[] items;
+        public static UnityEngine.Camera cam;
+        public static List<Player> PlayerControllers = new List<Player>();
 
         public static void Update()
         {
@@ -25,11 +30,13 @@ namespace TestMod
             if (timeSinceLastUpdate >= updateInterval)
             {
                 players = GameObject.FindObjectsOfType<Player>();
+                PlayerControllers = Resources.FindObjectsOfTypeAll<Player>().ToList();
                 bots = GameObject.FindObjectsOfType<Bot>();
                 divingBells = GameObject.FindObjectsOfType<UseDivingBellButton>();
                 items = GameObject.FindObjectsOfType<ItemInstance>();
+                cam = UnityEngine.Camera.main;
 
-                
+
                 timeSinceLastUpdate = 0f;
             }
             RunESP();
@@ -40,44 +47,65 @@ namespace TestMod
             if (Modules.teamESP)
             {
                 //Weirdly gets the spiders pos too....
-                foreach (Player enemy in players)
+                foreach (Player player in PlayerControllers)
                 {
-                    if (enemy != null)
+
+
+
+                    Vector3 w2s = cam.WorldToScreenPoint(player.HeadPosition());
+                    Vector3 enemyBottom = player.HeadPosition();
+                    Vector3 enemyTop;
+                    enemyTop.x = enemyBottom.x;
+                    enemyTop.z = enemyBottom.z;
+                    enemyTop.y = enemyBottom.y + 2f;
+                    Vector3 worldToScreenBottom = cam.WorldToScreenPoint(enemyBottom);
+                    Vector3 worldToScreenTop = cam.WorldToScreenPoint(enemyTop);
+
+                    if (player.IsLocal)
+                        return;
+
+
+
+
+                    if (ESPUtils.IsOnScreen(w2s))
                     {
 
-                        Vector3 pivotPos = enemy.HeadPosition();
-
-                        //In-Game Position
-                        Vector3 pivotPos1 = enemy.transform.position; //Pivot point NOT at the feet, at the center
-                        Vector3 playerFootPos; playerFootPos.x = pivotPos.x; playerFootPos.z = pivotPos.z; playerFootPos.y = pivotPos.y - 1.8f; //At the feet
-                        Vector3 playerHeadPos; playerHeadPos.x = pivotPos.x; playerHeadPos.z = pivotPos.z; playerHeadPos.y = pivotPos.y + 0.5f; //At the head
-
-                        //Screen Position
-                        Vector3 w2s_footpos = Camera.main.WorldToScreenPoint(playerFootPos);
-                        Vector3 w2s_headpos = Camera.main.WorldToScreenPoint(playerHeadPos);
+                        float height = Mathf.Abs(worldToScreenTop.y - worldToScreenBottom.y);
+                        float x = w2s.x - height * 0.3f;
+                        float y = Screen.height - worldToScreenTop.y;
 
 
+                        Vector2 namePosition = new Vector2(w2s.x, UnityEngine.Screen.height - w2s.y + 8f);
+                        Vector2 hpPosition = new Vector2(x + (height / 2f) + 3f, y + 1f);
+
+
+                        namePosition -= new Vector2(player.HeadPosition().x - player.HeadPosition().x, 0f);
+                        hpPosition -= new Vector2(player.HeadPosition().x - player.HeadPosition().x, 0f);
+
+                        float distance = Vector3.Distance(UnityEngine.Camera.main.transform.position, player.HeadPosition());
+                        int fontSize = Mathf.Clamp(Mathf.RoundToInt(12f / distance), 10, 20);
 
 
 
-
-                        if (w2s_footpos.z > 0f && !enemy.IsLocal && enemy.name == "Player(Clone)")//
+                        if (player.ai)
                         {
-                            //Render.DrawColorString(new Vector2(w2s_headpos.x, (float)Screen.height - w2s_headpos.y + 0.3f), "Teammates", limeColor, 12f);
-                            DrawBoxESP(w2s_footpos, w2s_headpos, limeColor);
-
-                            Render.DrawLine(new Vector2((float)(Screen.width / 2), (float)(Screen.height * 2)), new Vector2(w2s_footpos.x, (float)Screen.height - w2s_footpos.y), limeColor, 2f);
-
-
-
+                            ESPUtils.DrawString(namePosition, player.name.Replace("(Clone)", ""), Color.red, true, fontSize, FontStyle.Bold);
+                        }
+                        else
+                        {
+                            ESPUtils.DrawString(namePosition, player.refs.view.Controller.ToString() + "\n" + "HP: " + player.data.health, Color.green, true, fontSize, FontStyle.Bold);
+                            ESPUtils.DrawHealth(new Vector2(w2s.x, UnityEngine.Screen.height - w2s.y + 22f), player.data.health, 100f, 0.5f, true);
 
                         }
+
+
+
                     }
                 }
                 //Trying to get somehow the Enemys Position
-               
 
-                
+
+
             }
 
             if (Modules.mobESP)

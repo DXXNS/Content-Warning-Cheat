@@ -47,7 +47,7 @@ namespace TestMod.BreadCrumbs
 
                 foreach (Player player in GameObject.FindObjectsOfType<Player>())
                 {
-                    if (player != null && player.data != null)
+                    if (player != null && player.data != null && !player.ai)
                     {
                         Vector3 playerPosition = player.data.groundPos;
                         breadcrumbs[playerPosition] = currentTime;

@@ -34,6 +34,10 @@
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>F:\SteamLibrary\steamapps\common\Content Warning\Content Warning_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
+    <Reference Include="com.rlabrecque.steamworks.net, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Programmes (x86)\Steam\steamapps\common\Content Warning\Content Warning_Data\Managed\com.rlabrecque.steamworks.net.dll</HintPath>
+    </Reference>
     <Reference Include="MelonLoader">
       <HintPath>F:\SteamLibrary\steamapps\common\Content Warning\MelonLoader\MelonLoader.dll</HintPath>
     </Reference>
@@ -47,7 +51,7 @@
     </Reference>
     <Reference Include="PhotonRealtime, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Downloads\gunfickers\game\Gunfighters_Data\Managed\PhotonRealtime.dll</HintPath>
+      <HintPath>..\..\..\..\..\Programmes (x86)\Steam\steamapps\common\Content Warning\Content Warning_Data\Managed\PhotonRealtime.dll</HintPath>
     </Reference>
     <Reference Include="PhotonUnityNetworking, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -379,6 +383,7 @@
     <Compile Include="Duplicator.cs" />
     <Compile Include="Enemy.cs" />
     <Compile Include="ESP.cs" />
+    <Compile Include="ESPutils.cs" />
     <Compile Include="Fullbright.cs" />
     <Compile Include="Modules.cs" />
     <Compile Include="Money.cs" />
