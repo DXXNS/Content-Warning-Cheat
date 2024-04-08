@@ -25,6 +25,10 @@ namespace TestMod
         public static List<Room> Rooms = new List<Room>();
         Photon.Realtime.Player[] otherPlayers;
         public SteamAPICall_t hAPICall;
+        public static List<string> enemyNames = new List<string>();
+        public static List<string> playerNames = new List<string>();
+        public static Bot selectedMonster;
+        public static Player selectedPlayer;
 
         public override void OnSceneWasInitialized(int buildIndex, string sceneName)
         {
@@ -33,11 +37,7 @@ namespace TestMod
             Load = new GameObject();
             Load.AddComponent<Fullbright>();
             breadcrumbsInstance = new Breadcrumbs();
-            var harmony = new HarmonyLib.Harmony("com.Akira.TestMod");
-            harmony.UnpatchAll();
             MelonLogger.Msg($"Scene initialized: {buildIndex} - {sceneName}");
-            otherPlayers = PhotonNetwork.PlayerListOthers;
-            hAPICall = SteamMatchmaking.RequestLobbyList();
         }
 
         private Texture2D MakeTex(int width, int height, Color color)
@@ -87,10 +87,18 @@ namespace TestMod
         {
             natNextUpdateTime += Time.deltaTime;
 
-            if (natNextUpdateTime >= 1f)
+            if (natNextUpdateTime >= 3f)
             {
                 PlayerControllers = Resources.FindObjectsOfTypeAll<Player>().ToList();
                 Rooms = Resources.FindObjectsOfTypeAll<Room>().ToList();
+                enemyNames = GameObject.FindObjectsOfType<Bot>()
+                        .Select(enemy => enemy.name)
+                        .Distinct()
+                        .ToList();
+                playerNames = GameObject.FindObjectsOfType<Player>()
+                        .Select(player => player.name)
+                        .Distinct()
+                        .ToList();
                 otherPlayers = PhotonNetwork.PlayerListOthers;
                 natNextUpdateTime = 0f;
             }
@@ -118,6 +126,7 @@ namespace TestMod
                 MelonLogger.Msg("Unpatched");
             }
             Modules.RunModules();
+
         }
         private void SetAllModulesFalse(ref bool moduleToActivate)
         {
@@ -301,6 +310,7 @@ namespace TestMod
                 }
                 Modules.delRay = GUILayout.Button("Add Delete Ray");
                 Modules.shopLifter = GUILayout.Toggle(Modules.shopLifter, "Shop Lifter");
+                Modules.infinitecameratime = GUILayout.Toggle(Modules.infinitecameratime, "Infinite Camera Time");
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Money amount : ");
                 Modules.moneyfield = GUILayout.TextField(Modules.moneyfield, GUILayout.Width(100));
@@ -320,11 +330,7 @@ namespace TestMod
                 }
                 GUILayout.EndHorizontal();
 
-                var itemNames = GameObject.FindObjectsOfType<ItemInstance>()
-                .ToList()
-                .Select(itemInstance => itemInstance.item.name)
-                .Distinct()
-                .ToList();
+                
 
                 if (GUILayout.Button(Modules.selectedItemName))
                 {
@@ -353,10 +359,6 @@ namespace TestMod
             {
                 try
                 {
-                    var enemyNames = GameObject.FindObjectsOfType<Bot>()
-                        .Select(enemy => enemy.name)
-                        .Distinct()
-                        .ToList();
 
                     if (GUILayout.Button(Modules.selectedEnemyName))
                     {
@@ -372,15 +374,13 @@ namespace TestMod
                             {
                                 Modules.selectedEnemyName = enemyName;
                                 Modules.dropdownOpenEnemy = false;
+                                selectedMonster = GameObject.FindObjectsOfType<Bot>()
+                        .FirstOrDefault(monster => monster.name == Modules.selectedEnemyName);
                             }
                         }
                         GUILayout.EndScrollView();
                     }
 
-                    var playerNames = GameObject.FindObjectsOfType<Player>()
-                        .Select(player => player.name)
-                        .Distinct()
-                        .ToList();
 
                     if (GUILayout.Button(Modules.selectedPlayerName))
                     {
@@ -417,6 +417,9 @@ namespace TestMod
                                     {
                                         Modules.selectedPlayerName = playerName;
                                         Modules.dropdownOpenPlayer = false;
+                                        selectedPlayer = PlayerControllers
+                    .FirstOrDefault(player1 => player.refs != null && player.refs.view != null && player.refs.view.Controller != null && player.refs.view.Controller.ToString() == Modules.selectedPlayerName);
+
                                     }
                                 }
                             }
@@ -430,10 +433,7 @@ namespace TestMod
 
 
 
-                    Player selectedPlayer = PlayerControllers
-                    .FirstOrDefault(player => player.refs != null && player.refs.view != null && player.refs.view.Controller != null && player.refs.view.Controller.ToString() == Modules.selectedPlayerName);
-                    Bot selectedMonster = GameObject.FindObjectsOfType<Bot>()
-                        .FirstOrDefault(monster => monster.name == Modules.selectedEnemyName);
+                    
 
                     if (selectedPlayer != null && selectedMonster != null)
                     {

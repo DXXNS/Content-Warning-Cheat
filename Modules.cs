@@ -12,6 +12,7 @@ using Harmony;
 using Steamworks;
 using Photon.Realtime;
 using Steamworks;
+using System.Reflection;
 namespace TestMod
 {
     public static class Modules
@@ -44,6 +45,18 @@ namespace TestMod
         public static bool infiniteBattery = false;
         private static float timeSinceLastUpdate = 0.0f;
         private static float updateInterval2 = 1f; // Update 60 times per second
+        private static float updateInterval3 = 5f;
+        private static float timeSinceLastUpdate2 = 0.0f;
+        public static bool infinitecameratime;
+        public static VideoCamera[] videoCameras;
+        private static Breadcrumbs breadcrumbs2;
+        private static Player[] players;
+        private static PlayerController[] playerControllers;
+        private static ShockStickTrigger[] shocksticks2;
+        private static PlayerHandler playerHandler;
+        private static BotHandler[] botHandlers;
+        private static Bot[] bots;
+        private static Web[] webs;
 
         public static void RunModules()
         {
@@ -52,12 +65,18 @@ namespace TestMod
             if (timeSinceLastUpdate >= updateInterval2)
             {
                 shocksticks = GameObject.FindObjectsOfType<ShockStickTrigger>();
+                breadcrumbs2 = GameObject.FindObjectOfType<Breadcrumbs>();
                 timeSinceLastUpdate = 0f;
             }
             timeSinceLastUpdate += Time.deltaTime;
             if (Time.time - lastUpdateTime >= updateInterval)
             {
-                foreach (Player player in GameObject.FindObjectsOfType<Player>())
+                if (players == null || players.Length == 0)
+                {
+                    players = GameObject.FindObjectsOfType<Player>();
+                }
+
+                foreach (Player player in players)
                 {
                     if (infHeal)
                         player.data.health = 100f;
@@ -72,153 +91,184 @@ namespace TestMod
                         player.data.sinceGrounded = 0.4f;
                         player.data.sinceJump = 0.7f;
                     }
-                    if (breadCrumbs)
+                }
+            }
+                if (breadCrumbs)
+                {
+                    //
+                    if (breadcrumbs2 != null)
                     {
-                        Breadcrumbs breadcrumbs2 = GameObject.FindObjectOfType<Breadcrumbs>();
-                        if (breadcrumbs2 != null)
-                        {
-                            breadcrumbs2.Update();
-                        }
-                        else
-                        {
-                            MelonLogger.Msg("Impossible de trouver l'object Breadcrumbs, création d'une nouvelle instance.");
-                            GameObject newGameObject = new GameObject("Breadcrumbs");
-                            breadcrumbs2 = newGameObject.AddComponent<Breadcrumbs>();
-                            breadcrumbs2.Update();
-                        }
+                        breadcrumbs2.Update();
                     }
-                    if (infinitesshockstick)
+                    else
                     {
-                        
-                        
+                        MelonLogger.Msg("Impossible de trouver l'object Breadcrumbs, création d'une nouvelle instance.");
+                        GameObject newGameObject = new GameObject("Breadcrumbs");
+                        breadcrumbs2 = newGameObject.AddComponent<Breadcrumbs>();
+                        breadcrumbs2.Update();
+                    }
+                }
+                if (infinitesshockstick)
+                {
 
-                        foreach (ShockStickTrigger shockstick in shocksticks)
+
+
+                    foreach (ShockStickTrigger shockstick in shocksticks)
+                    {
+                        foreach (Player player1 in TestMod.PlayerControllers)
                         {
-                            foreach (Player player1 in TestMod.PlayerControllers)
+                            if (player1 == null)
                             {
-                                if (player1 == null)
+                                //MelonLogger.Msg("Player is null");
+                            }
+                            else if (player1.refs == null)
+                            {
+                                //MelonLogger.Msg("Player.refs is null");
+                            }
+                            else if (player1.refs.view == null)
+                            {
+                                //MelonLogger.Msg("Player.refs.view is null");
+                            }
+                            else if (player1.refs.view.Controller == null)
+                            {
+                                //MelonLogger.Msg("Player.refs.view.Controller is null");
+                            }
+                            else
+                            {
+                                if (!player1.ai)
                                 {
-                                    //MelonLogger.Msg("Player is null");
-                                }
-                                else if (player1.refs == null)
-                                {
-                                    //MelonLogger.Msg("Player.refs is null");
-                                }
-                                else if (player1.refs.view == null)
-                                {
-                                    //MelonLogger.Msg("Player.refs.view is null");
-                                }
-                                else if (player1.refs.view.Controller == null)
-                                {
-                                    //MelonLogger.Msg("Player.refs.view.Controller is null");
-                                }
-                                else
-                                {
-                                    if (!player1.ai)
+                                    if (player1.refs.view.Controller.ToString() == originalplayer.refs.view.Controller.ToString())
                                     {
-                                        if (player1.refs.view.Controller.ToString() == originalplayer.refs.view.Controller.ToString())
+                                        // Add originalplayer to the ignored players list if it's not already there
+                                        if (!shockstick.ignoredPlayers.Contains(player1))
                                         {
-                                            // Add originalplayer to the ignored players list if it's not already there
-                                            if (!shockstick.ignoredPlayers.Contains(player1))
-                                            {
-                                                shockstick.ignoredPlayers.Add(player1);
-                                                MelonLogger.Msg("Added " + player1.refs.view.Controller.ToString() + " to the ignored list");
-                                            }
+                                            shockstick.ignoredPlayers.Add(player1);
+                                            MelonLogger.Msg("Added " + player1.refs.view.Controller.ToString() + " to the ignored list");
                                         }
-                                        else
+                                    }
+                                    else
+                                    {
+                                        // Remove other players from the ignored players list
+                                        if (shockstick.ignoredPlayers.Contains(player1))
                                         {
-                                            // Remove other players from the ignored players list
-                                            if (shockstick.ignoredPlayers.Contains(player1))
-                                            {
-                                                shockstick.ignoredPlayers.Remove(player1);
-                                                MelonLogger.Msg("Removed " + player1.refs.view.Controller.ToString() + " from the ignored list");
-                                            }
+                                            shockstick.ignoredPlayers.Remove(player1);
+                                            MelonLogger.Msg("Removed " + player1.refs.view.Controller.ToString() + " from the ignored list");
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                    if(antiragdoll)
+                }
+                if (antiragdoll)
+                {
+                    Player.localPlayer.refs.ragdoll.force = 0f;
+                    Player.localPlayer.refs.ragdoll.torque = 0f;
+
+
+                }
+                if (infiniteBattery)
+                {
+                    Battery.Update();
+                }
+                if (add4players)
+                {
+                    Steamworks.SteamGameServer.SetMaxPlayerCount(8);
+                    for (int i = 0; i < 5; i++)
                     {
-                        Player.localPlayer.refs.ragdoll.force = 0f;
-                        Player.localPlayer.refs.ragdoll.torque = 0f;
-                        
-                        
-                    }
-                    if(infiniteBattery)
-                    {
-                        Battery.Update();
-                    }
-                    if (add4players)
-                    { Steamworks.SteamGameServer.SetMaxPlayerCount(8);
-                        for (int i = 0; i < 5; i++)
+                        // Créez une nouvelle instance de Player
+                        Player fakePlayer = new Player();
+
+                        // Définissez les propriétés du joueur fictif
+                        // Note : Vous devrez adapter ce code à la structure exacte de votre classe Player
+                        fakePlayer.name = "FakePlayer" + i;
+                        fakePlayer.data.health = 100f;
+                        fakePlayer.data.remainingOxygen = 500f;
+                        fakePlayer.data.currentStamina = 100f;
+
+                        PlayerHandler playerHandler = GameObject.FindObjectOfType<PlayerHandler>();
+
+                        // Assurez-vous que PlayerHandler existe
+                        if (playerHandler != null)
                         {
-                            // Créez une nouvelle instance de Player
-                            Player fakePlayer = new Player();
-
-                            // Définissez les propriétés du joueur fictif
-                            // Note : Vous devrez adapter ce code à la structure exacte de votre classe Player
-                            fakePlayer.name = "FakePlayer" + i;
-                            fakePlayer.data.health = 100f;
-                            fakePlayer.data.remainingOxygen = 500f;
-                            fakePlayer.data.currentStamina = 100f;
-
-                            PlayerHandler playerHandler = GameObject.FindObjectOfType<PlayerHandler>();
-
-        // Assurez-vous que PlayerHandler existe
-        if (playerHandler != null)
-        {
-            // Ajoutez le joueur fictif à la liste des joueurs du jeu
-            playerHandler.AddPlayer(fakePlayer);
-        }
-        else
-        {
-            MelonLogger.Msg("Impossible de trouver PlayerHandler");
-        }
+                            // Ajoutez le joueur fictif à la liste des joueurs du jeu
+                            playerHandler.AddPlayer(fakePlayer);
+                        }
+                        else
+                        {
+                            MelonLogger.Msg("Impossible de trouver PlayerHandler");
                         }
                     }
                 }
-                lastUpdateTime = Time.time;
-            }
+            
+            lastUpdateTime = Time.time;
+
+
             if (speed != 2.3)
             {
-                foreach (PlayerController playercon in GameObject.FindObjectsOfType<PlayerController>())
+
+                if (playerControllers == null || playerControllers.Length == 0)
+                {
+                    playerControllers = GameObject.FindObjectsOfType<PlayerController>();
+                }
+
+                foreach (PlayerController playercon in playerControllers)
                 {
                     playercon.sprintMultiplier = speed;
                 }
             }
             if (killAll)
             {
-                foreach (BotHandler botHandler in GameObject.FindObjectsOfType<BotHandler>())
+                if (botHandlers == null || botHandlers.Length == 0)
+                {
+                    botHandlers = GameObject.FindObjectsOfType<BotHandler>();
+                }
+
+                foreach (BotHandler botHandler in botHandlers)
                 {
                     botHandler.DestroyAll();
                 }
-                foreach (Bot bot in GameObject.FindObjectsOfType<Bot>())
+
+                if (bots == null || bots.Length == 0)
+                {
+                    bots = GameObject.FindObjectsOfType<Bot>();
+                }
+
+                foreach (Bot bot in bots)
                 {
                     bot.Destroy();
                 }
+
                 killAll = false;
             }
+
             if (goodLight)
             {
                 c_light = new UnityEngine.GameObject();
                 c_light.AddComponent<Fullbright>();
                 goodLight = false;
             }
+
             if (delRay)
             {
                 c_ray = new UnityEngine.GameObject();
                 c_ray.AddComponent<DeleteRay>();
                 delRay = false;
             }
+
             if (customFOV)
             {
                 SetFOV(cusFOVv, Camera.main);
             }
+
             if (ignoreWebs)
             {
-                foreach (Web web in GameObject.FindObjectsOfType<Web>())
+                if (webs == null || webs.Length == 0)
+                {
+                    webs = GameObject.FindObjectsOfType<Web>();
+                }
+
+                foreach (Web web in webs)
                 {
                     web.wholeBodyFactor = 0f;
                     web.distanceFactor = 0f;
@@ -226,20 +276,29 @@ namespace TestMod
                     web.force = 0f;
                 }
             }
+
             if (duplicator)
             {
                 Duplicator.DuplicateItems();
                 duplicator = !duplicator;
             }
+
             if (duplicateItems)
             {
                 Duplicator.DuplicateItems();
             }
+
             if (money)
             {
                 Money.AddMoneyToPlayer(int.Parse(moneyfield));
                 money = !money;
             }
+
+            if (infinitecameratime)
+            {
+                Battery.Update2();
+            }
+
             if (respawn)
             {
                 Player.localPlayer.CallRevive();
@@ -247,6 +306,7 @@ namespace TestMod
                 MelonLogger.Msg("Respawned");
             }
         }
+
         public static void SetFOV(float newFOV, Camera cam)
         {
             newFOV = Mathf.Clamp(newFOV, 1f, 179f);
