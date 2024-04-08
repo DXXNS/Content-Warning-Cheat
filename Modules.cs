@@ -66,32 +66,31 @@ namespace TestMod
             {
                 shocksticks = GameObject.FindObjectsOfType<ShockStickTrigger>();
                 breadcrumbs2 = GameObject.FindObjectOfType<Breadcrumbs>();
+                players = GameObject.FindObjectsOfType<Player>();
                 timeSinceLastUpdate = 0f;
             }
             timeSinceLastUpdate += Time.deltaTime;
-            if (Time.time - lastUpdateTime >= updateInterval)
+            if (players == null || players.Length == 0)
             {
-                if (players == null || players.Length == 0)
-                {
-                    players = GameObject.FindObjectsOfType<Player>();
-                }
+                players = GameObject.FindObjectsOfType<Player>();
+            }
 
-                foreach (Player player in players)
+            foreach (Player player in players)
+            {
+                if (infHeal)
+                    player.data.health = 100f;
+                if (infOxy)
+                    player.data.remainingOxygen = 500f;
+                if (infStam)
+                    player.data.currentStamina = 100f;
+                if (preventDeath)
+                    player.data.dead = false;
+                if (infJump)
                 {
-                    if (infHeal)
-                        player.data.health = 100f;
-                    if (infOxy)
-                        player.data.remainingOxygen = 500f;
-                    if (infStam)
-                        player.data.currentStamina = 100f;
-                    if (preventDeath)
-                        player.data.dead = false;
-                    if (infJump)
-                    {
-                        player.data.sinceGrounded = 0.4f;
-                        player.data.sinceJump = 0.7f;
-                    }
+                    player.data.sinceGrounded = 0.4f;
+                    player.data.sinceJump = 0.7f;
                 }
+                
             }
                 if (breadCrumbs)
                 {
