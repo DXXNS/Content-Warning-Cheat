@@ -22,7 +22,7 @@ namespace TestMod
         public static bool killAll = false;
         public static float speed = 2.3f;
         public static bool infJump = false, preventDeath = false, goodLight = false;
-        public static bool playerw = true, espw = false, worldw = false, miscw = false, enemyw = false;
+        public static bool playerw = true, espw = false, worldw = false, miscw = false, enemyw = false, keybindw = false;
         public static bool toolTip = true, Watermark = false, customFOV = false, ignoreWebs = false, delRay = false;
         public static float cusFOVv = 60f;
         public static string selectedSpawnItemName = "Select Item", selectedMonsterName = "Select Monster", selectedItemName = "Select Item", selectedEnemyName = "Select Enemy", selectedPlayerName = "Select Player";
@@ -58,7 +58,98 @@ namespace TestMod
         private static Bot[] bots;
         private static Web[] webs;
         private static float updatetime3 = 0.0f;
-
+        public static bool GetModuleByName(string moduleName)
+        {
+            switch (moduleName)
+            {
+                case "infHeal":
+                    return infHeal;
+                case "infOxy":
+                    return infOxy;
+                case "infStam":
+                    return infStam;
+                case "breadCrumbs":
+                    return breadCrumbs;
+                case "duplicator":
+                    return duplicator;
+                case "ShopLifter":
+                    return ShopLifter;
+                case "teamESP":
+                    return teamESP;
+                case "mobESP":
+                    return mobESP;
+                case "mobTracer":
+                    return mobTracer;
+                case "itemESP":
+                    return itemESP;
+                case "divingBox":
+                    return divingBox;
+                case "killAll":
+                    return killAll;
+                case "infJump":
+                    return infJump;
+                case "preventDeath":
+                    return preventDeath;
+                case "goodLight":
+                    return goodLight;
+                case "playerw":
+                    return playerw;
+                case "espw":
+                    return espw;
+                case "worldw":
+                    return worldw;
+                case "miscw":
+                    return miscw;
+                case "enemyw":
+                    return enemyw;
+                case "keybindw":
+                    return keybindw;
+                case "toolTip":
+                    return toolTip;
+                case "Watermark":
+                    return Watermark;
+                case "customFOV":
+                    return customFOV;
+                case "ignoreWebs":
+                    return ignoreWebs;
+                case "delRay":
+                    return delRay;
+                case "spawnDropdownOpen":
+                    return spawnDropdownOpen;
+                case "dropdownOpenMonster":
+                    return dropdownOpenMonster;
+                case "respawn":
+                    return respawn;
+                case "money":
+                    return money;
+                case "shopLifter":
+                    return shopLifter;
+                case "hasLifted":
+                    return hasLifted;
+                case "dropdownOpen":
+                    return dropdownOpen;
+                case "duplicateItems":
+                    return duplicateItems;
+                case "dropdownOpenEnemy":
+                    return dropdownOpenEnemy;
+                case "dropdownOpenPlayer":
+                    return dropdownOpenPlayer;
+                case "menuToggle":
+                    return menuToggle;
+                case "infinitesshockstick":
+                    return infinitesshockstick;
+                case "antiragdoll":
+                    return antiragdoll;
+                case "add4players":
+                    return add4players;
+                case "infiniteBattery":
+                    return infiniteBattery;
+                case "infinitecameratime":
+                    return infinitecameratime;
+                default:
+                    throw new ArgumentException("Invalid module name: " + moduleName);
+            }
+        }
         public static void RunModules()
         {
 

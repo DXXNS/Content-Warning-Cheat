@@ -45,12 +45,13 @@ namespace TestMod
         {
             MelonLogger.Msg($"Scene initialized: {buildIndex} - {sceneName}");
             
-            if(coroutineRunnerObject == null)
+            if (coroutineRunnerObject == null)
             {
                 GameObject coroutineRunnerObject = new GameObject("CoroutineRunner");
                 coroutineRunnerObject.AddComponent<CoroutineRunner>();
                 UnityEngine.Object.
                 DontDestroyOnLoad(coroutineRunnerObject);
+                KeyBinds.Start();
             }
             
             if (!AntiCrash)
@@ -245,6 +246,7 @@ namespace TestMod
         
         public override void OnUpdate()
         {
+            KeyBinds.OnUpdate();
             DivingBell activeDivingBell = GameObject.FindObjectsOfType<DivingBell>()
     .FirstOrDefault(db => db.isActiveAndEnabled);
             if (Player.localPlayer != null)
@@ -324,7 +326,7 @@ namespace TestMod
         }
         private void SetAllModulesFalse(ref bool moduleToActivate)
         {
-            Modules.worldw = Modules.playerw = Modules.miscw = Modules.espw = Modules.enemyw = false;
+            Modules.worldw = Modules.playerw = Modules.miscw = Modules.espw = Modules.enemyw = false; Modules.keybindw = false;
             moduleToActivate = true;
         }
         bool itemhasbeeninitialized = false;
@@ -371,6 +373,8 @@ namespace TestMod
                 SetAllModulesFalse(ref Modules.miscw);
             if (GUILayout.Button("Enemy"))
                 SetAllModulesFalse(ref Modules.enemyw);
+            if (GUILayout.Button("Keybinds"))
+                SetAllModulesFalse(ref Modules.keybindw);
             GUILayout.EndHorizontal();
 
             if (Modules.playerw)
@@ -654,6 +658,11 @@ namespace TestMod
                     MelonLogger.Error($"An error occurred in the enemy module: {ex}");
                 }
             }
+            if (Modules.keybindw)
+            {
+                KeyBinds.DisplayUI();
+                KeyBinds.HandleInput();
+            }
 
 
             GUI.DragWindow();
@@ -663,6 +672,7 @@ namespace TestMod
 
 
     }
+
 }
 public class CoroutineRunner : MonoBehaviour
 {
