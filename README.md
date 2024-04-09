@@ -77,21 +77,21 @@
 
 ### Misc
 - Watermark & Active Modules
--Add own light to scene (Press o to activate FullBright)
--Custom FOV
--Add Delete Ray
--ShopLifter
--Infinite Camera Time
--Add Money(host only)
--Duplicate item
+- Add own light to scene (Press o to activate FullBright)
+- Custom FOV
+- Add Delete Ray
+- ShopLifter
+- Infinite Camera Time
+- Add Money(host only)
+- Duplicate item
 
 ### Enemy
--Select a Monster
--Select a Player
--Do things to them (new features incoming)
+- Select a Monster
+- Select a Player
+- Do things to them (new features incoming)
 
 ### Keybinds
--Set all those keybinds and remember it for next time
+- Set all those keybinds and remember it for next time
 
 
 
