@@ -56,22 +56,43 @@
 - Inf Oxygen
 - Inf Stamina
 - Inf Jump
+- BreadCrumbs
 - Prevent Death (from lasers for example)
 - Speed Modulation (Modifies the Sprint speed)
-
+-Infinite ShockStick (can spam people with it)
+-Infinite Battery
 
 ### ESP
 - TeamESP
 - Diving Bell ESP
 - Mob Esp
   - Mob Tracers
+-Item ESP
 
 ### World
-- Features in work
-
+- Kill All Mobs (Host only)
+- Spawn custom item
+- Spawn custom monster
+- Random join a lobby
 
 ### Misc
-- Features in work
+- Watermark & Active Modules
+-Add own light to scene (Press o to activate FullBright)
+-Custom FOV
+-Add Delete Ray
+-ShopLifter
+-Infinite Camera Time
+-Add Money(host only)
+-Duplicate item
+
+### Enemy
+-Select a Monster
+-Select a Player
+-Do things to them (new features incoming)
+
+### Keybinds
+-Set all those keybinds and remember it for next time
+
 
 
 
