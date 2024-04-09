@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using System.IO;
 using Newtonsoft.Json;
+using Microsoft.Win32;
 
 namespace TestMod
 {
@@ -161,6 +162,7 @@ Modules.infinitecameratime
             }
         }
 
+        public static float timelepased = 0f;
         public static void OnUpdate()
         {
             foreach (var moduleName in ModuleKeys.Keys)
@@ -168,23 +170,35 @@ Modules.infinitecameratime
                 if (Input.GetKeyDown(ModuleKeys[moduleName]))
                 {
                     // Inverser la valeur du module
-                    ModuleActions[moduleName](!Modules.GetModuleByName(moduleName));
+                    bool newState = !Modules.GetModuleByName(moduleName);
+                    ModuleActions[moduleName](newState);
+
+                    // Mettre à jour l'état dans ModuleStates
+                    ModuleStates[moduleName] = newState;
                 }
             }
-            foreach (var moduleName in ModuleKeys.Keys)
+            foreach (var moduleName in ModuleActions.Keys)
             {
-                if (Input.GetKeyDown(ModuleKeys[moduleName]))
-                {
-                    // Inverser la valeur du module
-                    bool newState = !ModuleStates[moduleName];
-                    ModuleActions[moduleName](newState);
-                    ModuleStates[moduleName] = newState;
+                ModuleStates[moduleName] = Modules.GetModuleByName(moduleName);
+            }
 
+            //every ten seconds do this 
+            timelepased += Time.deltaTime;
+            if(timelepased >= 1f)
+            {
+                // Charger les touches à partir d'un fichier
+                if (File.Exists("states.json"))
+                {
                     // Enregistrer l'état d'activation des cheats dans un fichier
                     string json = JsonConvert.SerializeObject(ModuleStates);
                     File.WriteAllText("states.json", json);
                 }
+
+
+                timelepased = 0f;
             }
+                
+
         }
         
         public static Vector2 scrollPosition;

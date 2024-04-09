@@ -40,18 +40,22 @@ namespace TestMod
         public static Vector3 HeadPos;
         public static bool AlreadyWaiting = false;
         public static GameObject coroutineRunnerObject = null;
+        public static bool activatedkeybinds = false;
 
         public override void OnSceneWasInitialized(int buildIndex, string sceneName)
         {
             MelonLogger.Msg($"Scene initialized: {buildIndex} - {sceneName}");
-            
+            if(!activatedkeybinds)
+            { KeyBinds.Start();
+                activatedkeybinds = true;
+            }
             if (coroutineRunnerObject == null)
             {
                 GameObject coroutineRunnerObject = new GameObject("CoroutineRunner");
                 coroutineRunnerObject.AddComponent<CoroutineRunner>();
                 UnityEngine.Object.
                 DontDestroyOnLoad(coroutineRunnerObject);
-                KeyBinds.Start();
+                
             }
             
             if (!AntiCrash)
