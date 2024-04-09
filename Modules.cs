@@ -57,6 +57,7 @@ namespace TestMod
         private static BotHandler[] botHandlers;
         private static Bot[] bots;
         private static Web[] webs;
+        private static float updatetime3 = 0.0f;
 
         public static void RunModules()
         {
@@ -201,11 +202,16 @@ namespace TestMod
                 }
             
             lastUpdateTime = Time.time;
-
+            updatetime3 += Time.deltaTime;
 
             if (speed != 2.3)
             {
-
+                if (updatetime3 >= updateInterval3)
+                {
+                    playerControllers = GameObject.FindObjectsOfType<PlayerController>();
+                    updatetime3 = 0f;
+                }
+                    
                 if (playerControllers == null || playerControllers.Length == 0)
                 {
                     playerControllers = GameObject.FindObjectsOfType<PlayerController>();

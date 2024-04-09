@@ -38,6 +38,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Programmes (x86)\Steam\steamapps\common\Content Warning\Content Warning_Data\Managed\com.rlabrecque.steamworks.net.dll</HintPath>
     </Reference>
+    <Reference Include="Lockdown">
+      <HintPath>C:\Users\mat12\AppData\Roaming\r2modmanPlus-local\ContentWarning\profiles\withanti1\BepInEx\plugins\www_Day_Dream-Lockdown\Lockdown\Lockdown.dll</HintPath>
+    </Reference>
     <Reference Include="MelonLoader">
       <HintPath>F:\SteamLibrary\steamapps\common\Content Warning\MelonLoader\MelonLoader.dll</HintPath>
     </Reference>
@@ -378,6 +381,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Battery.cs" />
     <Compile Include="BreadCrumbs.cs" />
     <Compile Include="DeleteRay.cs" />
     <Compile Include="Duplicator.cs" />

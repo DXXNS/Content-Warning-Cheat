@@ -73,7 +73,7 @@ namespace TestMod.BreadCrumbs
                 if (viewportPosition.z > 0 && viewportPosition.x >= 0 && viewportPosition.x <= 1 && viewportPosition.y >= 0 && viewportPosition.y <= 1)
                 {
                     Vector3 screenPosition = Camera.main.WorldToScreenPoint(breadcrumb.Key);
-                    GUI.DrawTexture(new Rect(screenPosition.x, Screen.height - screenPosition.y, 5, 5), Texture2D.whiteTexture);
+                    GUI.DrawTexture(new Rect(screenPosition.x, Screen.height - screenPosition.y, 1.5f, 1.5f), Texture2D.whiteTexture);
 
                     long elapsedTime = System.DateTimeOffset.Now.ToUnixTimeMilliseconds() - breadcrumb.Value;
                     int elapsedSeconds = (int)(elapsedTime / 1000);

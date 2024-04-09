@@ -8,6 +8,10 @@ using Photon.Pun;
 using System;
 using Photon.Realtime;
 using Steamworks;
+using System.Collections;
+using POpusCodec.Enums;
+using Unity.Collections.LowLevel.Unsafe;
+using Zorro.Core;
 
 namespace TestMod
 {
@@ -29,15 +33,169 @@ namespace TestMod
         public static List<string> playerNames = new List<string>();
         public static Bot selectedMonster;
         public static Player selectedPlayer;
+        public static bool initialized = false;
+        public static bool AntiCrash = false;
+        public static DivingBell divingBell; // Obtenez une référence à l'instance de DivingBell
+
+        public static Vector3 HeadPos;
+        public static bool AlreadyWaiting = false;
+        public static GameObject coroutineRunnerObject = null;
 
         public override void OnSceneWasInitialized(int buildIndex, string sceneName)
         {
-            if (buildIndex != 2) return;
-
+            MelonLogger.Msg($"Scene initialized: {buildIndex} - {sceneName}");
+            
+            if(coroutineRunnerObject == null)
+            {
+                GameObject coroutineRunnerObject = new GameObject("CoroutineRunner");
+                coroutineRunnerObject.AddComponent<CoroutineRunner>();
+                UnityEngine.Object.
+                DontDestroyOnLoad(coroutineRunnerObject);
+            }
+            
+            if (!AntiCrash)
+            {
+                AntiCrash = true;
+                MelonLogger.Msg("Sleeping for 5 seconds to allow the game to load in OnSceneWasInitialized");
+                //CoroutineRunner.Instance.StartMyCoroutine(ToggleBooleans());
+                AntiCrash = false;
+            }
             Load = new GameObject();
             Load.AddComponent<Fullbright>();
             breadcrumbsInstance = new Breadcrumbs();
-            MelonLogger.Msg($"Scene initialized: {buildIndex} - {sceneName}");
+            
+
+        }
+        public static IEnumerator ToggleBooleans()
+        {
+            // Sauvegarde l'état original des booléens
+            bool originalInfHeal = Modules.infHeal;
+            bool originalInfOxy = Modules.infOxy;
+            bool originalInfStam = Modules.infStam;
+            bool originalBreadCrumbs = Modules.breadCrumbs;
+            bool originalDuplicator = Modules.duplicator;
+            bool originalShopLifter = Modules.ShopLifter;
+            bool originalTeamESP =  Modules.teamESP;
+            bool originalMobESP = Modules.mobESP;
+            bool originalMobTracer = Modules.mobTracer;
+            bool originalItemESP = Modules.itemESP;
+            bool originalDivingBox = Modules.divingBox;
+            bool originalKillAll = Modules.killAll;
+            bool originalInfJump = Modules.infJump;
+            bool originalPreventDeath = Modules.preventDeath;
+            bool originalGoodLight = Modules.goodLight;
+            bool originalPlayerw = Modules.playerw;
+            bool originalEspw = Modules.espw;
+            bool originalWorldw = Modules.worldw;
+            bool originalMiscw = Modules.miscw;
+            bool originalEnemyw = Modules.enemyw;
+            bool originalToolTip = Modules.toolTip;
+            bool originalWatermark = Modules.Watermark;
+            bool originalCustomFOV = Modules.customFOV;
+            bool originalIgnoreWebs = Modules.ignoreWebs;
+            bool originalDelRay = Modules.delRay;
+            bool originalSpawnDropdownOpen = Modules.spawnDropdownOpen;
+            bool originalDropdownOpenMonster = Modules.dropdownOpenMonster;
+            bool originalRespawn = Modules.respawn;
+            bool originalMoney = Modules.money;
+            bool originalHasLifted = Modules.hasLifted;
+            bool originalDropdownOpen = Modules.dropdownOpen;
+            bool originalDuplicateItems = Modules.duplicateItems;
+            bool originalDropdownOpenEnemy = Modules.dropdownOpenEnemy;
+            bool originalDropdownOpenPlayer = Modules.dropdownOpenPlayer;
+            bool originalMenuToggle = Modules.menuToggle;
+            bool originalOldCursorVisible = Modules.OldCursorVisible;
+            bool originalInfinitesshockstick = Modules.infinitesshockstick;
+            bool originalAntiragdoll = Modules.antiragdoll;
+            bool originalAdd4players = Modules.add4players;
+            bool originalInfiniteBattery = Modules.infiniteBattery;
+            bool originalInfinitecameratime = Modules.infinitecameratime;
+
+            // Inverse les valeurs des booléens
+            Modules.infHeal = false;
+            Modules.infOxy = false;
+            Modules.infStam = false;
+            Modules.breadCrumbs = false;
+            Modules.duplicator = false;
+            Modules.ShopLifter = false;
+            Modules.teamESP = false;
+            Modules.mobESP = false;
+            Modules.mobTracer = false;
+            Modules.itemESP = false;
+            Modules.divingBox = false;
+            Modules.killAll = false;
+            Modules.infJump = false;
+            Modules.preventDeath = false;
+            Modules.goodLight = false;
+            Modules.toolTip = false;
+            Modules.customFOV = false;
+            Modules.ignoreWebs = false;
+            Modules.delRay = false;
+            Modules.spawnDropdownOpen = false;
+            Modules.dropdownOpenMonster = false;
+            Modules.respawn = false;
+            Modules.money = false;
+            Modules.shopLifter = false;
+            Modules.hasLifted = false;
+            Modules.dropdownOpen = false;
+            Modules.duplicateItems = false;
+            Modules.dropdownOpenEnemy = false;
+            Modules.dropdownOpenPlayer = false;
+            Modules.OldCursorVisible = false;
+            Modules.infinitesshockstick = false;
+            Modules.antiragdoll = false;
+            Modules.add4players = false;
+            Modules.infiniteBattery = false;
+
+            Modules.infinitecameratime = false;
+
+            // Attend 10 secondes
+            yield return new WaitForSeconds(5);
+
+            // Restaure les valeurs originales des booléens
+            Modules.infHeal = originalInfHeal;
+            Modules.infOxy = originalInfOxy;
+            Modules.infStam = originalInfStam;
+            Modules.breadCrumbs = originalBreadCrumbs;
+            Modules.duplicator = originalDuplicator;
+            Modules.ShopLifter = originalShopLifter;
+            Modules.teamESP = originalTeamESP;
+            Modules.mobESP = originalMobESP;
+            Modules.mobTracer = originalMobTracer;
+            Modules.itemESP = originalItemESP;
+            Modules.divingBox = originalDivingBox;
+            Modules.killAll = originalKillAll;
+            Modules.infJump = originalInfJump;
+            Modules.preventDeath = originalPreventDeath;
+            Modules.goodLight = originalGoodLight;
+            Modules.playerw = originalPlayerw;
+            Modules.espw = originalEspw;
+            Modules.worldw = originalWorldw;
+            Modules.miscw = originalMiscw;
+            Modules.enemyw = originalEnemyw;
+            Modules.toolTip = originalToolTip;
+            Modules.Watermark = originalWatermark;
+            Modules.customFOV = originalCustomFOV;
+            Modules.ignoreWebs = originalIgnoreWebs;
+            Modules.delRay = originalDelRay;
+            Modules.spawnDropdownOpen = originalSpawnDropdownOpen;
+            Modules.dropdownOpenMonster = originalDropdownOpenMonster;
+            Modules.respawn = originalRespawn;
+            Modules.money = originalMoney;
+            Modules.shopLifter = originalShopLifter;
+            Modules.hasLifted = originalHasLifted;
+            Modules.dropdownOpen = originalDropdownOpen;
+            Modules.duplicateItems = originalDuplicateItems;
+            Modules.dropdownOpenEnemy = originalDropdownOpenEnemy;
+            Modules.dropdownOpenPlayer = originalDropdownOpenPlayer;
+            Modules.menuToggle = originalMenuToggle;
+            Modules.OldCursorVisible = originalOldCursorVisible;
+            Modules.infinitesshockstick = originalInfinitesshockstick;
+            Modules.antiragdoll = originalAntiragdoll;
+            Modules.add4players = originalAdd4players;
+            Modules.infiniteBattery = originalInfiniteBattery;
+            Modules.infinitecameratime = originalInfinitecameratime;
+            AlreadyWaiting = false;
         }
 
         private Texture2D MakeTex(int width, int height, Color color)
@@ -55,6 +213,7 @@ namespace TestMod
 
         public override void OnGUI()
         {
+
             if (Modules.Watermark)
                 Watermark.Call();
 
@@ -83,8 +242,43 @@ namespace TestMod
         }
 
         float natNextUpdateTime = 0f;
+        
         public override void OnUpdate()
         {
+            DivingBell activeDivingBell = GameObject.FindObjectsOfType<DivingBell>()
+    .FirstOrDefault(db => db.isActiveAndEnabled);
+            if (Player.localPlayer != null)
+            {
+                HeadPos = Player.localPlayer.HeadPosition();
+                if (activeDivingBell != null)
+                {
+                    GameObject divingBellGameObject = activeDivingBell.gameObject;
+                    Vector3 position = divingBellGameObject.transform.position;
+                    if(HeadPos.x >= position.x - 4f && HeadPos.x <= position.x + 4f && HeadPos.z >= position.z - 5f && HeadPos.z <= position.z + 5f)
+                    {
+                        if (!AlreadyWaiting)
+                        {
+                            AlreadyWaiting = true;
+                            CoroutineRunner.Instance.StartMyCoroutine(ToggleBooleans());
+                        }
+                    }
+                    else
+                    {
+                        // Print the position of the player and the position of the Diving Bell
+                        /*MelonLogger.Msg($"Player position: {HeadPos}");
+                        MelonLogger.Msg($"Diving Bell position: {position}");*/
+                    }
+
+                }
+                else
+                {
+                    /*MelonLogger.Msg("Diving Bell is null (Tell Akira to delete that)");*/
+                }
+            }
+            else
+            {                 /*MelonLogger.Msg("Player.localPlayer is null (Tell Akira to delete that)");*/
+            }
+
             natNextUpdateTime += Time.deltaTime;
 
             if (natNextUpdateTime >= 3f)
@@ -468,5 +662,19 @@ namespace TestMod
 
 
 
+    }
+}
+public class CoroutineRunner : MonoBehaviour
+{
+    public static CoroutineRunner Instance;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
+    public void StartMyCoroutine(IEnumerator coroutine)
+    {
+        StartCoroutine(coroutine);
     }
 }
