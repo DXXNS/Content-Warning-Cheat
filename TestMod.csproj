@@ -389,6 +389,7 @@
     <Compile Include="ESP.cs" />
     <Compile Include="ESPutils.cs" />
     <Compile Include="Fullbright.cs" />
+    <Compile Include="KeyBinds.cs" />
     <Compile Include="Modules.cs" />
     <Compile Include="Money.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
