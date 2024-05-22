@@ -21,6 +21,8 @@ namespace TestMod
         private static List<ShockStick> shockSticks; // Add list for ShockStick objects
         private static List<Flare> flares; // Add list for Flare objects
         private static List<VideoCamera> videoCameras; // Add list for VideoCamera objects
+        private static List<NorgGun> norgGuns; // Add list for NorgGun objects
+        private static List<RescueHook> rescueHooks; // Add list for RescueHook objects
         private static float timeSinceLastUpdate2 = 0.0f;
         private static float updateInterval3 = 1f; // Update 60 times per second
 
@@ -35,7 +37,8 @@ namespace TestMod
                 defibs = GameObject.FindObjectsOfType<Defib>().ToList(); // Find all Defib objects
                 shockSticks = GameObject.FindObjectsOfType<ShockStick>().ToList(); // Find all ShockStick objects
                 flares = GameObject.FindObjectsOfType<Flare>().ToList(); // Find all Flare objects
-
+                norgGuns = GameObject.FindObjectsOfType<NorgGun>().ToList(); // Find all NorgGun objects
+                rescueHooks = GameObject.FindObjectsOfType<RescueHook>().ToList(); // Find all RescueHook objects
                 timeSinceLastUpdate = 0f;
             }
 
@@ -114,6 +117,9 @@ namespace TestMod
 
             // Run for ShockStick objects
             RunBatteryForType(shockSticks, typeof(ShockStick));
+
+            RunBatteryForType(norgGuns, typeof(NorgGun));
+            RunBatteryForType(rescueHooks, typeof(RescueHook));
         }
 
         private static void RunBatteryForType<T>(List<T> objects, Type type)

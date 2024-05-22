@@ -4,6 +4,7 @@ using UnityEngine;
 using Zorro.Core.CLI;
 using MelonLoader;
 using System.Linq;
+using Steamworks;
 public class Duplicator
 {
     public static void DuplicateItems()
@@ -50,19 +51,39 @@ public class Duplicator
 
     }
 
-    public static void SpawnItem(string itemName)
+    public static void SpawnItem(string itemName, int amount)
     {
         // Trouver l'item dans la base de données d'items
         var item = ItemDatabase.Instance.lastLoadedItems.FirstOrDefault(i => i.name == itemName);
+        if (item != null && amount != 0)
+        {
+            for (double i = 0; i < amount; i += 1)
+            {
+                Vector3 debugItemSpawnPos = MainCamera.instance.GetDebugItemSpawnPos();
+                Player.localPlayer.RequestCreatePickup(item, new ItemInstanceData(Guid.NewGuid()), debugItemSpawnPos, UnityEngine.Quaternion.identity);
+            }
+        }
 
-        if (item != null)
+    }
+    
+}
+
+
+//Thanks to IcyRelic
+public static class PlayerExtensions
+{
+    public static Photon.Realtime.Player PhotonPlayer(this Player player) => player.refs.view.Owner;
+    public static CSteamID GetSteamID(this Player player) => player.refs.view.Owner.GetSteamID();
+    public static bool IsValid(this Player player) => !player.ai; //todo figure out way to check if its one of the spammed when joining private
+}
+public static class PhotonPlayerExtensions
+    {
+        public static CSteamID GetSteamID(this Photon.Realtime.Player photonPlayer)
         {
-            Vector3 debugItemSpawnPos = MainCamera.instance.GetDebugItemSpawnPos();
-            Player.localPlayer.RequestCreatePickup(item, new ItemInstanceData(Guid.NewGuid()), debugItemSpawnPos, UnityEngine.Quaternion.identity);
+            bool success = SteamAvatarHandler.TryGetSteamIDForPlayer(photonPlayer, out CSteamID steamid);
+            return steamid;
         }
-        else
-        {
-        }
+        public static Player GamePlayer(this Photon.Realtime.Player photonPlayer) => PlayerHandler.instance.players.Find(x => x.PhotonPlayer().ActorNumber == photonPlayer.ActorNumber);
     }
 
-}
+

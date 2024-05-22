@@ -29,6 +29,11 @@ namespace TestMod
             RoomStatsHolder roomStatsHolder = SurfaceNetworkHandler.RoomStats;
             roomStatsHolder.AddMoney(money);
         }
+        public static void AddMetaToPlayer(int meta)
+
+        {
+            MetaProgressionHandler.AddMetaCoins(meta);
+        }
     }
     [HarmonyPatch(typeof(ShopHandler), "OnAddToCartItemClicked")]
     public static class OnAddToCartItemClickedPatch

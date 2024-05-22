@@ -12,19 +12,22 @@ using System.Collections;
 using POpusCodec.Enums;
 using Unity.Collections.LowLevel.Unsafe;
 using Zorro.Core;
+using pworld.Scripts;
+using System.Reflection;
+using CurvedUI;
 
 namespace TestMod
 {
     public static class BuildInfo
     {
-        public const string Name = "Content Mod"; public const string Description = "A mod to Cheat in Content Warning"; public const string Author = "DXXNS / SnickersIZ / Akira"; public const string Company = null; public const string Version = "0.0.4"; public const string DownloadLink = null;
+        public const string Name = "Content Mod"; public const string Description = "A mod to Cheat in Content Warning"; public const string Author = "DXXNS / SnickersIZ / Akira / malmock"; public const string Company = null; public const string Version = "0.1.0"; public const string DownloadLink = null;
     }
-
+    [ContentWarningPlugin("a","0.1.0",true)]
     public class TestMod : MelonMod
     {
         private Breadcrumbs breadcrumbsInstance;
         private static GameObject Load;
-        public Rect windowRect = new Rect(20, 20, 400, 400);
+        public Rect windowRect = new Rect(20, 20, 600, 600);
         public static List<Player> PlayerControllers = new List<Player>();
         public static List<Room> Rooms = new List<Room>();
         Photon.Realtime.Player[] otherPlayers;
@@ -247,9 +250,45 @@ namespace TestMod
         }
 
         float natNextUpdateTime = 0f;
-        
+        public override void OnFixedUpdate()
+
+        {
+
+            if (Modules.menuToggle)
+            {
+
+                Cursor.visible = true;
+
+                Cursor.lockState = CursorLockMode.None;
+
+            }
+
+        }
+
+        public override void OnLateUpdate()
+
+        {
+
+            if (Modules.menuToggle)
+            {
+
+                Cursor.visible = true;
+
+                Cursor.lockState = CursorLockMode.None;
+
+            }
+
+        }
         public override void OnUpdate()
         {
+            if (Modules.menuToggle)
+            {
+
+                Cursor.visible = true;
+
+                Cursor.lockState = CursorLockMode.None;
+
+            }
             KeyBinds.OnUpdate();
             DivingBell activeDivingBell = GameObject.FindObjectsOfType<DivingBell>()
     .FirstOrDefault(db => db.isActiveAndEnabled);
@@ -305,8 +344,14 @@ namespace TestMod
             if (Input.GetKeyUp(KeyCode.N) || Input.GetKeyUp(KeyCode.Insert))
             {
                 Modules.menuToggle = !Modules.menuToggle;
-                Cursor.visible = Modules.menuToggle;
-                Cursor.lockState = Modules.menuToggle ? CursorLockMode.None : Modules.OldCursorLockMode;
+                if (!Modules.menuToggle)
+                {
+
+                    Cursor.visible = false;
+
+                    Cursor.lockState = CursorLockMode.Locked;
+
+                }
             }
             if (Input.GetKeyDown(KeyCode.Delete))
                 Modules.toolTip = false;
@@ -359,7 +404,41 @@ namespace TestMod
     "Toolkit_Whisk",   // spawns
     "Toolkit_Wisk",    // spawns
     "Weeping", // spawns
-
+    "Arms",
+    "BigSlap_Small",
+    "BlackHoleBot",
+    "CamCreep",
+    "Puffo",
+    "SnailSpawner",
+    "Worm",
+    "UltraKnifo",
+    "Mime",
+    "MimicMan",
+    "ButtonRobot",
+    "Harpooner",
+    "Shroomer",
+    "Streamer",
+    "Fire",
+    "MimicInfiltrator",
+    "Infiltrator2",
+    "Wallo",
+    "ExplodedGoop",
+    "Web",
+    "WalloArm",
+    "Angler",
+    "AnglerMimic",
+    "AnglerMimic2",
+    "PodcastChair",
+    "Projector",
+    "PoolBall",
+    "PoolRing",
+    "Player",
+    "Dummy_Alive",
+    "Dummy_Dead",
+    "CinemaScreen",
+    "Chair_Inside",
+    "DeckChair",
+    "Hatshop",
 
 };
 
@@ -416,6 +495,9 @@ namespace TestMod
             if (Modules.worldw)
             {
                 Modules.killAll = GUILayout.Button("Kill all Mobs");
+                GUILayout.Label("Spawn amount : ");
+
+                Modules.spawny = GUILayout.TextField(Modules.spawny, GUILayout.Width(100));
                 if (GUILayout.Button(Modules.selectedItemName))
                 {
                     if (!itemhasbeeninitialized)
@@ -447,10 +529,14 @@ namespace TestMod
                 {
                     if (GUILayout.Button("Spawn Item"))
                     {
-                        Duplicator.SpawnItem(Modules.selectedItemName);
+                        Duplicator.SpawnItem(Modules.selectedItemName, int.Parse(Modules.spawny));
                     }
                 }
+                GUILayout.Label(" ");
 
+                GUILayout.Label("Spawn amount : ");
+
+                Modules.monsterspawny = GUILayout.TextField(Modules.monsterspawny, GUILayout.Width(100));
                 if (GUILayout.Button(Modules.selectedMonsterName))
                 {
                     Modules.dropdownOpenMonster = !Modules.dropdownOpenMonster;
@@ -474,9 +560,16 @@ namespace TestMod
                 {
                     if (GUILayout.Button("Spawn Monster"))
                     {
-                        MonsterSpawner.SpawnMonster(Modules.selectedMonsterName);
+                        for (double i = 0; i < int.Parse(Modules.monsterspawny); i += 1)
+
+                        {
+
+                            MonsterSpawner.SpawnMonster(Modules.selectedMonsterName);
+
+                        }
                     }
                 }
+                GUILayout.Label(" ");
                 GUILayout.BeginVertical(GUI.skin.box);
                 
                 if (GUILayout.Button("Request Lobby List"))
@@ -531,8 +624,42 @@ namespace TestMod
                     }
                 }
                 GUILayout.EndHorizontal();
+                GUILayout.BeginHorizontal();
 
-                
+                GUILayout.Label("Metacoins amount : ");
+
+                Modules.metafield = GUILayout.TextField(Modules.moneyfield, GUILayout.Width(100));
+
+                GUILayout.EndHorizontal();
+
+                GUILayout.BeginHorizontal();
+
+                if (GUILayout.Button("Add Metacoins (Host Only)"))
+
+                {
+
+                    int metaToAdd;
+
+                    if (int.TryParse(Modules.metafield, out metaToAdd))
+
+                    {
+
+                        Modules.meta = true;
+
+                    }
+
+                    else
+
+                    {
+
+                        MelonLogger.Msg("Invalid number");
+
+                    }
+
+                }
+
+                GUILayout.EndHorizontal();
+
 
                 if (GUILayout.Button(Modules.selectedItemName))
                 {
@@ -635,32 +762,240 @@ namespace TestMod
 
 
 
-                    
 
-                    if (selectedPlayer != null && selectedMonster != null)
+
+                    if (selectedPlayer != null)
                     {
-                        
-                        if (GUILayout.Button("AddIgnore"))
+                        Modules.selectedPlayer = selectedPlayer;
+                        var item2 = ItemDatabase.Instance.lastLoadedItems.FirstOrDefault(i => i.name == "Bomb");
+
+                        if (GUILayout.Button("Explode Player"))
                         {
-                            Enemy.AddIgnore(selectedPlayer, selectedMonster);
+
+                            if (selectedPlayer != null)
+                            {
+
+
+
+                                for (double i = 0; i < 50; i += 1)
+
+                                {
+
+                                    Vector3 poss = selectedPlayer.data.groundPos;
+
+                                    selectedPlayer.RequestCreatePickup(item2, new ItemInstanceData(Guid.NewGuid()), poss, UnityEngine.Quaternion.identity);
+
+                                }
+
+                            }
+
                         }
 
-                        if (GUILayout.Button("DelIgnore"))
+                        if (GUILayout.Button("Stick Player"))
                         {
-                            Enemy.RemoveIgnore(selectedPlayer, selectedMonster);
+
+                            if (selectedPlayer != null)
+                            {
+
+                                MonsterSpawner.SpawnMonster("ExplodedGoop", selectedPlayer.HeadPosition().ModifyY(2));
+
+                                MonsterSpawner.SpawnMonster("ExplodedGoop", selectedPlayer.data.groundPos);
+
+                                for (double i = 0; i < 40; i += 1)
+
+                                {
+
+                                    MonsterSpawner.SpawnMonster("Web", selectedPlayer.HeadPosition());
+
+                                    MonsterSpawner.SpawnMonster("Web", selectedPlayer.data.groundPos);
+
+
+
+                                }
+
+                            }
+
                         }
 
-                        if (GUILayout.Button("IgnoreAll"))
+                        if (GUILayout.Button("Skin Player"))
                         {
-                            Enemy.AllIgnore(selectedPlayer);
+
+                            if (selectedPlayer != null)
+                            {
+
+
+
+                                Vector3 poss = selectedPlayer.data.groundPos;
+
+
+
+                                selectedPlayer.RequestCreatePickup(ItemDatabase.Instance.lastLoadedItems.FirstOrDefault(i => i.name == "Brain on a stick"), new ItemInstanceData(Guid.NewGuid()), poss, UnityEngine.Quaternion.identity);
+
+                                selectedPlayer.RequestCreatePickup(ItemDatabase.Instance.lastLoadedItems.FirstOrDefault(i => i.name == "Skull"), new ItemInstanceData(Guid.NewGuid()), poss, UnityEngine.Quaternion.identity);
+
+                                selectedPlayer.RequestCreatePickup(ItemDatabase.Instance.lastLoadedItems.FirstOrDefault(i => i.name == "Ribcage"), new ItemInstanceData(Guid.NewGuid()), poss, UnityEngine.Quaternion.identity);
+
+                                selectedPlayer.RequestCreatePickup(ItemDatabase.Instance.lastLoadedItems.FirstOrDefault(i => i.name == "Bone"), new ItemInstanceData(Guid.NewGuid()), poss, UnityEngine.Quaternion.identity);
+
+                                selectedPlayer.RequestCreatePickup(ItemDatabase.Instance.lastLoadedItems.FirstOrDefault(i => i.name == "Spine"), new ItemInstanceData(Guid.NewGuid()), poss, UnityEngine.Quaternion.identity);
+
+                                selectedPlayer.RequestCreatePickup(ItemDatabase.Instance.lastLoadedItems.FirstOrDefault(i => i.name == "HardHat"), new ItemInstanceData(Guid.NewGuid()), poss, UnityEngine.Quaternion.identity);
+
+                                selectedPlayer.RequestCreatePickup(ItemDatabase.Instance.lastLoadedItems.FirstOrDefault(i => i.name == "FakeOldFlashlight"), new ItemInstanceData(Guid.NewGuid()), poss, UnityEngine.Quaternion.identity);
+
+                                MethodInfo CallSound = typeof(Player).GetMethod("CallMakeSound", BindingFlags.NonPublic | BindingFlags.Instance);
+                                CallSound.Invoke(selectedPlayer, new object[] { 0 });
+                                MethodInfo Damagageandforce = typeof(Player).GetMethod("CallTakeDamageAndAddForceAndFall", BindingFlags.NonPublic | BindingFlags.Instance);
+                                Damagageandforce.Invoke(selectedPlayer, new object[] { 0, new Vector3(0, -9999, 0), 1 });
+
+                            }
+
+                        }
+
+                        if (GUILayout.Button("Kill Player"))
+                        {
+
+                            if (selectedPlayer != null)
+                            {
+
+                                MethodInfo CallSound = typeof(Player).GetMethod("CallMakeSound", BindingFlags.NonPublic | BindingFlags.Instance);
+                                CallSound.Invoke(selectedPlayer, new object[] { 0 });
+                                MethodInfo Damagageandforce = typeof(Player).GetMethod("CallTakeDamageAndAddForceAndFall", BindingFlags.NonPublic | BindingFlags.Instance);
+                                Damagageandforce.Invoke(selectedPlayer, new object[] { 0, new Vector3(0, -9999, 0), 1 });
+
+
+                            }
+
+                        }
+
+                        if (GUILayout.Button("Blackhole Player"))
+                        {
+
+                            if (selectedPlayer != null)
+                            {
+
+                                MonsterSpawner.SpawnMonster("BlackHoleBot", selectedPlayer.HeadPosition());
+                                if (GUILayout.Button("Teleport Player"))
+                                {
+
+                                    if (selectedPlayer != null)
+                                    {
+                                        MethodInfo tP = typeof(Player).GetMethod("Teleport", BindingFlags.NonPublic | BindingFlags.Instance);
+                                        tP.Invoke(selectedPlayer, new object[] { Player.localPlayer.HeadPosition(), Player.localPlayer.HeadPosition() });
+
+                                    }
+
+                                }
+
+                            }
+                        }
+                        if (GUILayout.Button("Shopkeeper Player"))
+                        {
+
+                            if (selectedPlayer != null)
+                            {
+
+                                MonsterSpawner.SpawnMonster("Hatshop", selectedPlayer.data.groundPos);
+
+                            }
+
+                        }
+
+                        if (GUILayout.Button("Cage Player"))
+                        {
+
+                            if (selectedPlayer != null)
+                            {
+
+                                MonsterSpawner.SpawnMonster("Weeping", selectedPlayer.data.groundPos);
+
+                            }
+
+                        }
+
+                        if (GUILayout.Button("Ghost Player"))
+                        {
+
+                            if (selectedPlayer != null)
+                            {
+
+                                MethodInfo CallSound = typeof(Player).GetMethod("CallMakeSound", BindingFlags.NonPublic | BindingFlags.Instance);
+                                CallSound.Invoke(selectedPlayer, new object[] { 0 });
+
+                            }
+
+                        }
+
+                        if (GUILayout.Button("Fling Player"))
+                        {
+
+                            if (selectedPlayer != null)
+                            {
+                                MethodInfo Damagageandforce = typeof(Player).GetMethod("CallTakeDamageAndAddForceAndFall", BindingFlags.NonPublic | BindingFlags.Instance);
+                                Damagageandforce.Invoke(selectedPlayer, new object[] { 0, new Vector3(0, 100, 0), 1 });
+
+                                MethodInfo CallSound = typeof(Player).GetMethod("CallMakeSound", BindingFlags.NonPublic | BindingFlags.Instance);
+                                CallSound.Invoke(selectedPlayer, new object[] { 0 });
+                                        
+
+                            }
+
+                        }
+
+                        if (GUILayout.Button("Taze Player"))
+                        {
+
+                            if (selectedPlayer != null)
+                            {
+                                MethodInfo damageandTase = typeof(Player).GetMethod("CallTakeDamageAndTase", BindingFlags.NonPublic | BindingFlags.Instance);
+                                damageandTase.Invoke(selectedPlayer, new object[] { 0, 5 });
+
+                                MethodInfo CallSound = typeof(Player).GetMethod("CallMakeSound", BindingFlags.NonPublic | BindingFlags.Instance);
+                                CallSound.Invoke(selectedPlayer, new object[] { 0 });
+
+                            }
+
+                        }
+
+
+
+                        Modules.freezeselected = GUILayout.Toggle(Modules.freezeselected, "Freeze");
+                        bool revive = GUILayout.Button("Revive");
+                        bool bomb = GUILayout.Button("Bomb him");
+                        if (revive)
+                        {
+                            if (selectedPlayer.data.dead)
+                            {
+                                selectedPlayer.CallRevive();
+                            }
+                        }
+                        if (bomb)
+                        {
+                            var item = ItemDatabase.Instance.lastLoadedItems.FirstOrDefault(i => i.name == "Bomb");
+                            if (item != null)
+                            {
+                                Vector3 debugItemSpawnPos = selectedPlayer.refs.cameraPos.position;
+                                Player.localPlayer.RequestCreatePickup(item, new ItemInstanceData(Guid.NewGuid()), debugItemSpawnPos, UnityEngine.Quaternion.identity);
+                            }
                         }
                     }
+
+                    Modules.reviveAll = GUILayout.Toggle(Modules.reviveAll, "Revive All");
+                    Modules.freezeAll = GUILayout.Toggle(Modules.freezeAll, "Freeze All");
+                    if(GUILayout.Button("Kick All (Host Only)"))
+                    {
+                        PhotonNetwork.CurrentRoom.SetMasterClient(PhotonNetwork.LocalPlayer.IsMasterClient ? PlayerHandler.instance.playersAlive.Find(x => x.GetSteamID() != Player.localPlayer.GetSteamID()).PhotonPlayer() : Player.localPlayer.PhotonPlayer());
+
+                    }
+                    Modules.killAllPlayers = GUILayout.Button("Kill All Players");
                 }
                 catch (Exception ex)
                 {
                     // Log the exception to the console
                     MelonLogger.Error($"An error occurred in the enemy module: {ex}");
                 }
+               
+
             }
             if (Modules.keybindw)
             {
@@ -672,7 +1007,7 @@ namespace TestMod
             GUI.DragWindow();
 
         }
-
+        
 
 
     }

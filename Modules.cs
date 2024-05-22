@@ -17,9 +17,10 @@ namespace TestMod
 {
     public static class Modules
     {
+        public static Player selectedPlayer;
         public static bool infHeal = false, infOxy = false, infStam = false, breadCrumbs = false, duplicator = false, ShopLifter = false;
-        public static bool teamESP = false, mobESP = false, mobTracer = false, itemESP = false, divingBox = false;
-        public static bool killAll = false;
+        public static bool teamESP = false, mobESP = false, mobTracer = false, itemESP = false, divingBox = false, meta = false;
+        public static bool killAll = false, killAllPlayers = false, reviveAll = false, freezeAll = false, freezeselected = false;
         public static float speed = 2.3f;
         public static bool infJump = false, preventDeath = false, goodLight = false;
         public static bool playerw = true, espw = false, worldw = false, miscw = false, enemyw = false, keybindw = false;
@@ -28,6 +29,9 @@ namespace TestMod
         public static string selectedSpawnItemName = "Select Item", selectedMonsterName = "Select Monster", selectedItemName = "Select Item", selectedEnemyName = "Select Enemy", selectedPlayerName = "Select Player";
         public static bool spawnDropdownOpen = false, dropdownOpenMonster = false, respawn = false, money = false, shopLifter = false, hasLifted = false, dropdownOpen = false, duplicateItems = false, dropdownOpenEnemy = false, dropdownOpenPlayer = false;
         public static string moneyfield = "1000";
+        public static string metafield = "1000";
+        public static string spawny = "1";
+        public static string monsterspawny = "1";
         public static Vector2 spawnScrollPosition = Vector2.zero, scrollPositionMonster = Vector2.zero, scrollPosition = Vector2.zero, scrollPositionEnemy = Vector2.zero, scrollPositionPlayer = Vector2.zero;
         public static bool menuToggle { get; set; }
         public static bool OldCursorVisible { get; set; }
@@ -122,6 +126,8 @@ namespace TestMod
                     return respawn;
                 case "money":
                     return money;
+                case "meta":
+                    return meta;
                 case "shopLifter":
                     return shopLifter;
                 case "hasLifted":
@@ -175,8 +181,11 @@ namespace TestMod
                     player.data.remainingOxygen = 500f;
                 if (infStam)
                     player.data.currentStamina = 100f;
-                if (preventDeath)
+                if (preventDeath && player.data.dead == true)
+                {
                     player.data.dead = false;
+                    player.CallRevive();
+                }
                 if (infJump)
                 {
                     player.data.sinceGrounded = 0.4f;
@@ -389,7 +398,12 @@ namespace TestMod
                 Money.AddMoneyToPlayer(int.Parse(moneyfield));
                 money = !money;
             }
+            if (meta)
 
+            {
+                Money.AddMetaToPlayer(int.Parse(metafield));
+                meta = !meta;
+            }
             if (infinitecameratime)
             {
                 Battery.Update2();
@@ -400,6 +414,59 @@ namespace TestMod
                 Player.localPlayer.CallRevive();
                 respawn = !respawn;
                 MelonLogger.Msg("Respawned");
+            }
+            if(reviveAll)
+            {
+                foreach(Player player in players)
+                {
+                    if (player.data.dead)
+                    {
+                        player.CallRevive();
+                    }
+                }
+            }
+            if(freezeAll)
+            {
+                foreach(var p in players.Where(p => !p.IsLocal))
+                {
+                    MethodInfo method = typeof(Player).GetMethod("CallSlowFor", BindingFlags.NonPublic | BindingFlags.Instance);
+
+                    if (method != null)
+                    {
+                        // Appellez la méthode CallSlowFor avec les arguments -0f et 1f
+                        method.Invoke(p, new object[] { -0f, 1f });
+                    }
+                }
+            }
+            if(freezeselected)
+            {
+                
+                if (selectedPlayer != null)
+                {
+                    MethodInfo method = typeof(Player).GetMethod("CallSlowFor", BindingFlags.NonPublic | BindingFlags.Instance);
+
+                    if (method != null)
+                    {
+                        // Appellez la méthode CallSlowFor avec les arguments -0f et 1f
+                        method.Invoke(selectedPlayer, new object[] { -0f, 1f });
+                    }
+                }
+                else
+                {
+                    selectedPlayer = players.FirstOrDefault(p => p.name == selectedPlayerName);
+                }
+            }
+            if(killAllPlayers)
+            {
+                foreach (var p in players.Where(p => !p.IsLocal))
+                {
+                    MethodInfo calldie = typeof(Player).GetMethod("CallDie", BindingFlags.NonPublic | BindingFlags.Instance);
+                    if (calldie != null)
+                    {
+                        calldie.Invoke(p, new object[] { });
+
+                    }
+                }
             }
         }
 

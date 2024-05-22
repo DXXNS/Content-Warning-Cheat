@@ -42,151 +42,164 @@ namespace TestMod
             }
             RunESP();
         }
-
+        public static float distance;
         public static void RunESP()
         {
-            if (Modules.teamESP)
+            try
             {
-                //Weirdly gets the spiders pos too....
-                foreach (Player player in PlayerControllers)
+                if (Modules.teamESP)
                 {
-
-
-                    if (player != null && player.transform != null && !player.ai)
+                    //Weirdly gets the spiders pos too....
+                    foreach (Player player in PlayerControllers)
                     {
-                        Vector3? enemyBottom = null;
-                        try
+
+
+                        if (player != null && player.transform != null && !player.ai && cam != null)
                         {
-                            enemyBottom = player.HeadPosition();
-                        }
-                        catch (NullReferenceException)
-                        {
-                            continue;
-                        }
-                        if (enemyBottom == null)
-                        {
-                            return;
-                        }
-                        Vector3 w2s = cam.WorldToScreenPoint(enemyBottom.Value);
-                        Vector3 enemyTop = enemyBottom.Value;
-                        enemyTop.y += 2f;
-                        Vector3 worldToScreenBottom = cam.WorldToScreenPoint(enemyBottom.Value);
-                        Vector3 worldToScreenTop = cam.WorldToScreenPoint(enemyTop);
-
-                        if (player.IsLocal)
-                            continue;
-
-
-
-                        if (ESPUtils.IsOnScreen(w2s))
-                        {
-
-                            float height = Mathf.Abs(worldToScreenTop.y - worldToScreenBottom.y);
-                            float x = w2s.x - height * 0.3f;
-                            float y = Screen.height - worldToScreenTop.y;
-
-
-                            Vector2 namePosition = new Vector2(w2s.x, UnityEngine.Screen.height - w2s.y + 8f);
-                            Vector2 hpPosition = new Vector2(x + (height / 2f) + 3f, y + 1f);
-
-
-                            namePosition -= new Vector2(player.HeadPosition().x - player.HeadPosition().x, 0f);
-                            hpPosition -= new Vector2(player.HeadPosition().x - player.HeadPosition().x, 0f);
-
-                            float distance = Vector3.Distance(UnityEngine.Camera.main.transform.position, player.HeadPosition());
-                            int fontSize = Mathf.Clamp(Mathf.RoundToInt(12f / distance), 10, 20);
-
-
-
-                            if (player.ai)
+                            Vector3? enemyBottom = null;
+                            try
                             {
-                                ESPUtils.DrawString(namePosition, player.name.Replace("(Clone)", ""), Color.red, true, fontSize, FontStyle.Bold);
+                                enemyBottom = player.HeadPosition();
                             }
-                            else
+                            catch (NullReferenceException)
                             {
-                                ESPUtils.DrawString(namePosition, player.refs.view.Controller.ToString() + "\n" + "HP: " + player.data.health, Color.green, true, fontSize, FontStyle.Bold);
-                                ESPUtils.DrawHealth(new Vector2(w2s.x, UnityEngine.Screen.height - w2s.y + 22f), player.data.health, 100f, 0.5f, true);
-
+                                continue;
+                            }
+                            if (enemyBottom == null || enemyBottom.Value == null)
+                            {
+                                return;
                             }
 
+                            Vector3 w2s = cam.WorldToScreenPoint(enemyBottom.Value);
+                            Vector3 enemyTop = enemyBottom.Value;
+                            enemyTop.y += 2f;
+                            Vector3 worldToScreenBottom = cam.WorldToScreenPoint(enemyBottom.Value);
+                            Vector3 worldToScreenTop = cam.WorldToScreenPoint(enemyTop);
 
+                            if (player.IsLocal)
+                                continue;
+
+
+
+                            if (ESPUtils.IsOnScreen(w2s))
+                            {
+
+                                float height = Mathf.Abs(worldToScreenTop.y - worldToScreenBottom.y);
+                                float x = w2s.x - height * 0.3f;
+                                float y = Screen.height - worldToScreenTop.y;
+
+
+                                Vector2 namePosition = new Vector2(w2s.x, UnityEngine.Screen.height - w2s.y + 8f);
+                                Vector2 hpPosition = new Vector2(x + (height / 2f) + 3f, y + 1f);
+
+                                try
+                                {
+                                    namePosition -= new Vector2(player.HeadPosition().x - player.HeadPosition().x, 0f);
+                                    hpPosition -= new Vector2(player.HeadPosition().x - player.HeadPosition().x, 0f);
+
+                                    float distance = Vector3.Distance(UnityEngine.Camera.main.transform.position, player.HeadPosition());
+
+                                }
+                                catch (NullReferenceException)
+                                {
+                                    return;
+                                }
+
+                                int fontSize = Mathf.Clamp(Mathf.RoundToInt(12f / distance), 10, 20);
+                                if (player.ai)
+                                {
+                                    ESPUtils.DrawString(namePosition, player.name.Replace("(Clone)", ""), Color.red, true, fontSize, FontStyle.Bold);
+                                }
+                                else
+                                {
+                                    ESPUtils.DrawString(namePosition, player.refs.view.Controller.ToString() + "\n" + "HP: " + player.data.health, Color.green, true, fontSize, FontStyle.Bold);
+                                    ESPUtils.DrawHealth(new Vector2(w2s.x, UnityEngine.Screen.height - w2s.y + 22f), player.data.health, 100f, 0.5f, true);
+
+                                }
+
+
+                            }
                         }
                     }
+                    //Trying to get somehow the Enemys Position
+
+
+
                 }
-                //Trying to get somehow the Enemys Position
 
-
-
-            }
-
-            if (Modules.mobESP)
-            {
-                foreach (Bot enemy in bots)
+                if (Modules.mobESP)
                 {
-                    if (enemy != null && enemy.transform != null)
+                    foreach (Bot enemy in bots)
                     {
-                        //In-Game Position
-                        Vector3 pivotPos = enemy.transform.position; //Pivot point NOT at the feet, at the center
-
-                        Vector3 playerHeadPos = pivotPos; //At the head
-
-                        //Screen Position
-                        Vector3 w2s_headpos = Camera.main.WorldToScreenPoint(playerHeadPos);
-
-                        if (w2s_headpos.z > 0f)//
+                        if (enemy != null && enemy.transform != null)
                         {
-                            Render.DrawColorString(new Vector2(w2s_headpos.x, (float)Screen.height - w2s_headpos.y + 0.3f), enemy.name, Color.red, 12f);
-                            if (Modules.mobTracer)
-                                Render.DrawLine(new Vector2((float)(Screen.width / 2), (float)(Screen.height * 2)), new Vector2(w2s_headpos.x, (float)Screen.height - w2s_headpos.y), Color.red, 2f);
+                            //In-Game Position
+                            Vector3 pivotPos = enemy.transform.position; //Pivot point NOT at the feet, at the center
+
+                            Vector3 playerHeadPos = pivotPos; //At the head
+
+                            //Screen Position
+                            Vector3 w2s_headpos = Camera.main.WorldToScreenPoint(playerHeadPos);
+
+                            if (w2s_headpos.z > 0f)//
+                            {
+                                Render.DrawColorString(new Vector2(w2s_headpos.x, (float)Screen.height - w2s_headpos.y + 0.3f), enemy.name, Color.red, 12f);
+                                if (Modules.mobTracer)
+                                    Render.DrawLine(new Vector2((float)(Screen.width / 2), (float)(Screen.height * 2)), new Vector2(w2s_headpos.x, (float)Screen.height - w2s_headpos.y), Color.red, 2f);
+                            }
+                        }
+                    }
+                }
+
+
+                if (Modules.divingBox)
+                {
+                    foreach (UseDivingBellButton diving in divingBells)
+                    {
+                        if (diving != null)
+                        {
+                            //In-Game Position
+                            Vector3 pivotPos = diving.transform.position;
+                            Vector3 playerFootPos = pivotPos; //At the feet
+                            Vector3 playerHeadPos = pivotPos; //At the head
+                            playerHeadPos.y += 0.2f; //At the head
+
+                            //Screen Position
+                            Vector3 w2s_footpos = Camera.main.WorldToScreenPoint(playerFootPos);
+                            Vector3 w2s_headpos = Camera.main.WorldToScreenPoint(playerHeadPos);
+
+                            if (w2s_footpos.z > 0f)//
+                            {
+                                Render.DrawColorString(new Vector2(w2s_headpos.x, (float)Screen.height - w2s_headpos.y + 1f), "Diving Bell", lightBlue, 12f);
+                                DrawBox1(w2s_footpos, w2s_headpos, lightBlue);
+                            }
+                        }
+                    }
+                }
+                if (Modules.itemESP)
+                {
+                    foreach (ItemInstance itemInstance in items)
+                    {
+                        if (itemInstance != null)
+                        {
+                            Item item = itemInstance.item;
+                            Vector3 pivotPos = itemInstance.transform.position;
+                            Vector3 itemPos = pivotPos;
+
+                            Vector3 w2s_itempos = Camera.main.WorldToScreenPoint(itemPos);
+
+                            if (w2s_itempos.z > 0f)
+                            {
+                                Render.DrawColorString(new Vector2(w2s_itempos.x, (float)Screen.height - w2s_itempos.y - 20f), item.name, Color.yellow, 12f);
+                                Render.DrawBox(w2s_itempos.x - 10f, (float)Screen.height - w2s_itempos.y - 10f, 20f, 20f, Color.yellow, 2f);
+                            }
                         }
                     }
                 }
             }
-
-
-            if (Modules.divingBox)
+            catch(NullReferenceException)
             {
-                foreach (UseDivingBellButton diving in divingBells)
-                {
-                    if (diving != null)
-                    {
-                        //In-Game Position
-                        Vector3 pivotPos = diving.transform.position;
-                        Vector3 playerFootPos = pivotPos; //At the feet
-                        Vector3 playerHeadPos = pivotPos; //At the head
-                        playerHeadPos.y += 0.2f; //At the head
-
-                        //Screen Position
-                        Vector3 w2s_footpos = Camera.main.WorldToScreenPoint(playerFootPos);
-                        Vector3 w2s_headpos = Camera.main.WorldToScreenPoint(playerHeadPos);
-
-                        if (w2s_footpos.z > 0f)//
-                        {
-                            Render.DrawColorString(new Vector2(w2s_headpos.x, (float)Screen.height - w2s_headpos.y + 1f), "Diving Bell", lightBlue, 12f);
-                            DrawBox1(w2s_footpos, w2s_headpos, lightBlue);
-                        }
-                    }
-                }
-            }
-            if (Modules.itemESP)
-            {
-                foreach (ItemInstance itemInstance in items)
-                {
-                    if (itemInstance != null)
-                    {
-                        Item item = itemInstance.item;
-                        Vector3 pivotPos = itemInstance.transform.position;
-                        Vector3 itemPos = pivotPos;
-
-                        Vector3 w2s_itempos = Camera.main.WorldToScreenPoint(itemPos);
-
-                        if (w2s_itempos.z > 0f)
-                        {
-                            Render.DrawColorString(new Vector2(w2s_itempos.x, (float)Screen.height - w2s_itempos.y - 20f), item.name, Color.yellow, 12f);
-                            Render.DrawBox(w2s_itempos.x - 10f, (float)Screen.height - w2s_itempos.y - 10f, 20f, 20f, Color.yellow, 2f);
-                        }
-                    }
-                }
+                return;
             }
 
         }
