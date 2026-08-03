@@ -1,3 +1,6 @@
+# This Mod is deprecated - a new mod is coming soon
+
+
 <br/>
 <p align="center">
   <h3 align="center">Content Warning Cheat</h3>
